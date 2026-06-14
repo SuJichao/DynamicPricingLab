@@ -9,7 +9,7 @@ import logging
 
 import zmail
 
-from config.config import (
+from config.email_config import (
     EMAIL_USERNAME, EMAIL_PASSWORD,
     EMAIL_POP_HOST, EMAIL_IMAP_HOST,
     EMAIL_SENT_KEEP_DAYS, EMAIL_SENT_KEEP_MAX,

@@ -1,0 +1,12 @@
+2026-06-13 15:06:36,195 run.py[line:51] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-13 15:11:19,326 basic_helper_fuction.py[line:36] ERROR 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 110, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 96, in _process_flight_type
+    data_storage(args, flt_type, result_data)
+  File "D:\CodeStarge\DynamicPricingLab\common\data_storage.py", line 91, in data_storage
+    solo_flt_advice_price_result = result_data['solo_flt_advice_price_result']
+TypeError: 'NoneType' object is not subscriptable
+2026-06-13 15:24:30,563 run.py[line:51] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-13 15:27:17,506 send_mail.py[line:118] ERROR 所有 IMAP 服务器均连接失败，请检查网络或服务器地址

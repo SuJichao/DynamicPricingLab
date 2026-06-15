@@ -120,7 +120,7 @@ def _hol_fields(t):
             f"HOL_AFTER_ONE_DAY={t['HOL_AFTER_ONE_DAY']} AND "
             f"HOL_AFTER_TWO_DAY={t['HOL_AFTER_TWO_DAY']} AND "
             f"HOLIDAY_SPRING_FESTIVAL={t['HOLIDAY_SPRING_FESTIVAL']} AND "
-            f"HOL_FALG={t['HOL_FALG']} AND "
+            f"HOL_FLAG={t['HOL_FLAG']} AND "
             f"HOL_LAST={t['HOL_LAST']} AND "
             f"HOLIDAY_RANGE={t['HOLIDAY_RANGE']}")
 
@@ -143,7 +143,7 @@ def _exists_l1_specific_dow(ctx, t, dow_value):
         f"SELECT * FROM {ctx.train_table} A "
         f"WHERE EXISTS ("
         f"SELECT * FROM {ctx.list_table} B WHERE B.HX={t['HX']} "
-        f"AND A.HOL_FALG=0 "
+        f"AND A.HOL_FLAG=0 "
         f"AND A.DOW={dow_value} "
         f"AND A.EX_DIF=B.EX_DIF "
         f"AND {_EXISTS_TP_CMP} "
@@ -159,7 +159,7 @@ def _exists_l1_decode_dow(ctx, t, decode_expr):
         f"SELECT * FROM {ctx.train_table} A "
         f"WHERE EXISTS ("
         f"SELECT * FROM {ctx.list_table} B WHERE B.HX={t['HX']} "
-        f"AND A.HOL_FALG=0 "
+        f"AND A.HOL_FLAG=0 "
         f"AND {decode_expr} "
         f"AND A.EX_DIF=B.EX_DIF "
         f"AND {_EXISTS_TP_CMP} "
@@ -175,7 +175,7 @@ def _exists_l2_part1(ctx, t):
         f"SELECT * FROM {ctx.train_table} A "
         f"WHERE EXISTS ("
         f"SELECT * FROM {ctx.list_table} B WHERE B.HX={t['HX']} "
-        f"AND A.HOL_FALG=0 "
+        f"AND A.HOL_FLAG=0 "
         f"AND A.DOW=B.DOW "
         f"AND A.EX_DIF=B.EX_DIF "
         f"AND B.EX_DIF>0 "
@@ -192,7 +192,7 @@ def _exists_l2_part2(ctx, t):
         f"SELECT * FROM {ctx.train_table} A "
         f"WHERE EXISTS ("
         f"SELECT * FROM {ctx.list_table} B WHERE B.HX={t['HX']} "
-        f"AND A.HOL_FALG=0 "
+        f"AND A.HOL_FLAG=0 "
         f"AND A.DOW=B.DOW "
         f"AND A.EX_DIF=B.EX_DIF "
         f"AND B.EX_DIF=0 "
@@ -229,7 +229,7 @@ class DataFetchRule:
 # 工厂函数：普通日规则链
 # ============================================================
 def make_normal_day_chain(ctx):
-    """普通日（HOL_FALG=0）数据获取链"""
+    """普通日（HOL_FLAG=0）数据获取链"""
 
     level0 = DataFetchRule(
         name="普通日-精确匹配",
@@ -372,7 +372,7 @@ def make_holiday_4plus_pre_chain(ctx):
                 f"EX_DIF={t['EX_DIF']} AND "
                 f"{c.tp(t)} AND "
                 f"HOLIDAY_SPRING_FESTIVAL={t['HOLIDAY_SPRING_FESTIVAL']} AND "
-                f"HOL_FALG={t['HOL_FALG']} AND "
+                f"HOL_FLAG={t['HOL_FLAG']} AND "
                 f"HOL_LAST>=3 AND HOLIDAY_RANGE<0")
 
     level0 = DataFetchRule(
@@ -424,7 +424,7 @@ def make_holiday_4plus_post_chain(ctx):
                 f"EX_DIF={t['EX_DIF']} AND "
                 f"{c.tp(t)} AND "
                 f"HOLIDAY_SPRING_FESTIVAL={t['HOLIDAY_SPRING_FESTIVAL']} AND "
-                f"HOL_FALG={t['HOL_FALG']} AND "
+                f"HOL_FLAG={t['HOL_FLAG']} AND "
                 f"HOL_LAST>=3 AND HOL_LAST-HOLIDAY_RANGE<0")
 
     level0 = DataFetchRule(
@@ -520,7 +520,7 @@ def make_holiday_4plus_mid_chain(ctx):
               AND EX_DIF={t['EX_DIF']}
               AND {c.tp(t)}
               AND HOLIDAY_SPRING_FESTIVAL={t['HOLIDAY_SPRING_FESTIVAL']}
-              AND HOL_FALG={t['HOL_FALG']}
+              AND HOL_FLAG={t['HOL_FLAG']}
               AND {_mid_where(c, t)}
         """,
     )
@@ -533,7 +533,7 @@ def make_holiday_4plus_mid_chain(ctx):
               AND EX_DIF={t['EX_DIF']}
               AND {c.tp(t)}
               AND HOLIDAY_SPRING_FESTIVAL={t['HOLIDAY_SPRING_FESTIVAL']}
-              AND HOL_FALG={t['HOL_FALG']}
+              AND HOL_FLAG={t['HOL_FLAG']}
               AND {_mid_where(c, t)}
             UNION ALL
             {_exists_l1_specific_dow(c, t, _mid_extra_clause(t, t['HOL_LAST'])[0])}
@@ -548,7 +548,7 @@ def make_holiday_4plus_mid_chain(ctx):
               AND EX_DIF={t['EX_DIF']}
               AND {c.tp(t)}
               AND HOLIDAY_SPRING_FESTIVAL={t['HOLIDAY_SPRING_FESTIVAL']}
-              AND HOL_FALG={t['HOL_FALG']}
+              AND HOL_FLAG={t['HOL_FLAG']}
               AND {_mid_where(c, t)}
             UNION ALL
             {_exists_l2_part1(c, t)}
@@ -618,37 +618,31 @@ def make_spring_festival_chain(ctx):
     春节假期-解除1级：对节前、节中和节后（以1周为单位）进行划分
     春运假期-解除2级：按节前、节中和节后三个区间进行划分
     """
-
-
     # 对节前、节中和节后（以1周为单位）进行划分
     def _sf_range_clause(holiday_range):
         # 春节假期-节前2周
-        if holiday_range < -7:
-            return "HOLIDAY_RANGE<-7"
+        if holiday_range <= -8:
+            return "HOLIDAY_RANGE<=-8"
         # 春节假期-节前1周（含除夕）
         elif -7 <= holiday_range <= 1:
             return "HOLIDAY_RANGE>=-7 AND HOLIDAY_RANGE<=1"
-        # 春节假期-节中（初2-5）
-        elif 2 <= holiday_range <= 5:
-            return "HOLIDAY_RANGE>=2 AND HOLIDAY_RANGE<=5"
-        # 春节假期-节中（初6-10）
-        elif 6 <= holiday_range <= 10:
-            return "HOLIDAY_RANGE>=6 AND HOLIDAY_RANGE<=10"
-        # 春节假期-节中（初11-15）
-        elif 11 <= holiday_range <= 15:
-            return "HOLIDAY_RANGE>=11 AND HOLIDAY_RANGE<=15"
+        # 春节假期-节中（初一-初三）
+        elif 2 <= holiday_range <= 4:
+            return "HOLIDAY_RANGE>=2 AND HOLIDAY_RANGE<=4"
+        # 春节假期-节中（初四-初十）
+        elif 5 <= holiday_range <= 11:
+            return "HOLIDAY_RANGE>=5 AND HOLIDAY_RANGE<=10"
+        # 春节假期-节中（初十一-元宵后一天）
+        elif 12 <= holiday_range <= 17:
+            return "HOLIDAY_RANGE>=12 AND HOLIDAY_RANGE<=17"
         # 春节假期-节后1周
-        elif holiday_range == 16:
-            return "HOLIDAY_RANGE>=15 AND HOLIDAY_RANGE<=17"
         else:
-            return "HOLIDAY_RANGE>16"
+            return "HOLIDAY_RANGE>=18"
 
-    # 春节 Level 0 本身就有多级回退（按区间），但在原代码中是通过 elif len<1 串联的。
     # 这里我们构建一个更扁平的链条：
 
     # 构建春节的子规则链：精确匹配 → 区间放宽 → 二次放宽(节前/节后合并)
     # 由于春节逻辑极其复杂，为保持与原行为一致，在 build_sql 中直接复刻原逻辑
-
 
     def _build_sf_fallback1(c, t):
         """第一次回退：按 HOLIDAY_RANGE 区间放宽"""
@@ -661,45 +655,27 @@ def make_spring_festival_chain(ctx):
               AND {_time_pt_clause(t)}
               AND HOLIDAY_SPRING_FESTIVAL={t['HOLIDAY_SPRING_FESTIVAL']}
               AND HOL_FLAG={t['HOL_FLAG']}
-              AND HOL_LAST={t['HOL_LAST']}
               AND {range_clause}
         """
 
     def _build_sf_fallback2(c, t):
         """第二次回退：合并节前/节后所有"""
         hr = t['HOLIDAY_RANGE']
-        if c.normal_levels >= 3:
-            # 小份额
-            if hr <= -1:
-                range_clause = "HOLIDAY_RANGE<=-1"
-            else:  # hr >= 6
-                range_clause = "HOLIDAY_RANGE>=6"
-            return f"""
-                SELECT * FROM {c.train_table} A
-                WHERE FLT_SEGMENT='{c.seg(t)}'
-                  AND EX_DIF={t['EX_DIF']}
-                  AND {c.tp(t)}
-                  AND HOLIDAY_SPRING_FESTIVAL={t['HOLIDAY_SPRING_FESTIVAL']}
-                  AND HOL_FALG={t['HOL_FALG']}
-                  AND {range_clause}
-            """
+        if hr <= 1:
+            range_clause = "HOLIDAY_RANGE<=1"
+        elif hr >= 5:
+            range_clause = "HOLIDAY_RANGE>=5"
         else:
-            # 独飞
-            if hr <= -1:
-                range_clause = "HOLIDAY_RANGE<=-1"
-            elif hr >= 6:
-                range_clause = "HOLIDAY_RANGE>=6"
-            else:
-                range_clause = "1=1"  # 不会到这里(节中不回退到 merge)
-            return f"""
-                SELECT * FROM {c.train_table} A
-                WHERE FLT_SEGMENT='{c.seg(t)}'
-                  AND EX_DIF={t['EX_DIF']}
-                  AND {c.tp(t)}
-                  AND HOLIDAY_SPRING_FESTIVAL={t['HOLIDAY_SPRING_FESTIVAL']}
-                  AND HOL_FALG={t['HOL_FALG']}
-                  AND {range_clause}
-            """
+            range_clause = "HOLIDAY_RANGE>=2 AND HOLIDAY_RANGE<=4"  # 不会到这里(节中不回退到 merge)
+        return f"""
+            SELECT * FROM {c.train_table} A
+            WHERE FLT_SEGMENT='{c.seg(t)}'
+              AND EX_DIF={t['EX_DIF']}
+              AND {_time_pt_clause(t)}
+              AND HOLIDAY_SPRING_FESTIVAL={t['HOLIDAY_SPRING_FESTIVAL']}
+              AND HOL_FLAG={t['HOL_FLAG']}
+              AND {range_clause}
+        """
 
     # 注意春节的回退比较特殊：Level 0 内部就有按区间的回退逻辑，
     # 这里通过多个 DataFetchRule 层叠来实现。
@@ -728,10 +704,6 @@ def make_spring_festival_chain(ctx):
         fallback=None,
     )
 
-    # 链接：精确 → 区间 → 合并
-    # 注意：原代码中区间回退只对 len<1 触发，
-    # 但第一次如果 len=0(不是<=1)也会触发，
-    # 所以这里按 DataFetchRule 的标准 (len<=1) 来回退是合理的。
     level0.fallback = level1
     level1.fallback = level2
 
@@ -745,11 +717,13 @@ def _select_holiday_chain(ctx, tmp_list):
     """根据 tmp_list 的节假日特征选择对应的规则链"""
     t = tmp_list
     hol_last = t.get('HOL_LAST', 0)
-
+    # 春运
     if t.get('HOLIDAY_SPRING_FESTIVAL') == 1:
         return make_spring_festival_chain(ctx)
+    # 清明、端午、中秋假期
     if hol_last == 1:
         return make_holiday_1day_chain(ctx)
+    # 五一、国庆（拼假中秋）小长假
     if hol_last == 2:
         return make_holiday_3day_chain(ctx)
     if hol_last >= 3:
@@ -773,7 +747,7 @@ def fetch_train_data(ctx, tmp_list):
     返回：
       pd.DataFrame — 训练数据（可能为空）
     """
-    if tmp_list.get('HOL_FALG') == 0:
+    if tmp_list.get('HOL_FLAG') == 0:
         chain = make_normal_day_chain(ctx)
     else:
         chain = _select_holiday_chain(ctx, tmp_list)
@@ -792,12 +766,16 @@ def fetch_predict_data(ctx, tmp_list):
     参数：
       ctx: FetchContext 实例
       tmp_list: 单条预测列表记录（pd.Series）
-
+          - HOL_FLAG: 0-非节假日，1-节假日
+          - HOLIDAY_SPRING_FESTIVAL: 0-非春运，1-春运
+          - HOLIDAY_BEFORE_AND_AFTER: 放假持续天数
+          - HOLIDAY_RANGE: 从节前到节后，按顺序进行标识，假期第一天标1，其他以此类推
+          - HOL_LAST: 1-3天（含）小长假（清明、端午）、2-3天以上大长假（五一、国庆）
     返回：
       pd.DataFrame — 待预测数据
     """
     t = tmp_list
-    if t.get('HOL_FALG') == 0:
+    if t.get('HOL_FLAG') == 0:
         sql = f"""
             SELECT *
             FROM {ctx.predict_table} A
@@ -820,10 +798,6 @@ def fetch_predict_data(ctx, tmp_list):
               AND FLT_NO={t['FLT_NO']}
               AND HXJG_FLAG={t['HXJG_FLAG']}
               AND HOL_FLAG={t['HOL_FLAG']}
-              AND HOL_BEFORE_TWO_DAY={t['HOL_BEFORE_TWO_DAY']}
-              AND HOL_BEFORE_ONE_DAY={t['HOL_BEFORE_ONE_DAY']}
-              AND HOL_AFTER_ONE_DAY={t['HOL_AFTER_ONE_DAY']}
-              AND HOL_AFTER_TWO_DAY={t['HOL_AFTER_TWO_DAY']}
               AND HOLIDAY_SPRING_FESTIVAL={t['HOLIDAY_SPRING_FESTIVAL']}
               AND HOL_LAST={t['HOL_LAST']}
               AND HOLIDAY_RANGE={t['HOLIDAY_RANGE']}

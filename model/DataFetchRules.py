@@ -34,7 +34,7 @@ class FetchContext:
       normal_levels      普通日回退级数     3(小份额) / 2(独飞)
     """
     def __init__(self, train_table, predict_table, list_table,
-                 segment_fn, flt_type, log_label_fn, normal_levels=2):
+                 segment_fn, flt_type, log_label_fn, normal_levels=2, holiday_levels=3):
         # 训练表、待预测表、待预测表索引的表名
         self.train_table = train_table
         self.predict_table = predict_table
@@ -45,8 +45,10 @@ class FetchContext:
         self.flt_type = flt_type
         # 日志信息
         self._log_label = log_label_fn
-        # 回退级数
+        # 回退级数-普通日
         self.normal_levels = normal_levels
+        # 回退级数-节假日
+        self.holiday_levels = holiday_levels
     def seg(self, t):
         return self._segment(t)
     def label(self, t):
@@ -56,32 +58,38 @@ class FetchContext:
 # ============================================================
 # 小份额上下文
 # ============================================================
+def _small_seg(t):
+    return t['FLT_SEGMENT']
 def _small_label(t):
-    return (f"序号：{t.get('HX','?')}：航段信息：{t.get('DEP','')}{t.get('ARR','')}，"
+    return (f"序号：{t.get('HX','?')}：航段信息：{t.get('FLT_SEGMENT','')}，"
             f"距离起飞天数{t.get('EX_DIF','?')}，采集时点{t.get('TIME_PT','?')}")
 
 SMALL_FLT_FETCH_CONTEXT = FetchContext(  
     train_table=None, predict_table=None, list_table=None,
-    segment_fn=None,
+    segment_fn=_small_seg,
     flt_type="SMALL_PART",
     log_label_fn=_small_label,
     normal_levels=2,
+    holiday_levels=3
 )
 
 
 # ============================================================
 # 独飞上下文
 # ============================================================
+def _solo_seg(t):
+    return t['FLT_SEGMENT']
 def _solo_label(t):
-    return (f"序号：{t.get('HX','?')}：航段信息：{t.get('DEP','')}{t.get('ARR','')}，"
+    return (f"序号：{t.get('HX','?')}：航段信息：{t.get('FLT_SEGMENT','')}，"
             f"距离起飞天数{t.get('EX_DIF','?')}，采集时点{t.get('TIME_PT','?')}")
 
 SOLO_FLT_FETCH_CONTEXT = FetchContext(
     train_table=None, predict_table=None, list_table=None,
-    segment_fn=None,
+    segment_fn=_solo_seg,
     flt_type="SOLO_PART",
     log_label_fn=_solo_label,
     normal_levels=2,
+    holiday_levels=3
 )
 
 
@@ -108,28 +116,26 @@ _EXISTS_TP_CMP = (
     " = "
     "CASE WHEN B.EX_DIF>7 THEN 1 ELSE B.TIME_PT END"
 )
-
+# ============================================================
+# 辅助：判断是否为独飞航班的SQL片段
+# ============================================================
+def _flt_type_judge(c):
+    return{"AND AIR_CODE IN ('MF','NS','RY')" if c.flt_type == 'SOLO_PART' else ""}
 
 # ============================================================
 # 辅助：节假日字段的 SQL 片段
 # ============================================================
 def _hol_fields(t):
     """返回 5 个节假日字段的 SQL 条件"""
-    return (f"HOL_BEFORE_TWO_DAY={t['HOL_BEFORE_TWO_DAY']} AND "
-            f"HOL_BEFORE_ONE_DAY={t['HOL_BEFORE_ONE_DAY']} AND "
-            f"HOL_AFTER_ONE_DAY={t['HOL_AFTER_ONE_DAY']} AND "
-            f"HOL_AFTER_TWO_DAY={t['HOL_AFTER_TWO_DAY']} AND "
-            f"HOLIDAY_SPRING_FESTIVAL={t['HOLIDAY_SPRING_FESTIVAL']} AND "
+    return (f"HOLIDAY_SPRING_FESTIVAL={t['HOLIDAY_SPRING_FESTIVAL']} AND "
             f"HOL_FLAG={t['HOL_FLAG']} AND "
             f"HOL_LAST={t['HOL_LAST']} AND "
             f"HOLIDAY_RANGE={t['HOLIDAY_RANGE']}")
-
-
 def _hol_base_where(ctx, t):
     """节假日基础 WHERE（不含额外过滤）"""
     return (f"FLT_SEGMENT='{ctx.seg(t)}' AND "
             f"EX_DIF={t['EX_DIF']} AND "
-            f"{ctx.tp(t)} AND "
+            f"{_time_pt_clause(t)} AND "
             f"{_hol_fields(t)}")
 
 
@@ -137,40 +143,50 @@ def _hol_base_where(ctx, t):
 # 辅助：生成 EXISTS 子查询的 3 种回退模式
 # ============================================================
 
-def _exists_l1_specific_dow(ctx, t, dow_value):
-    """Level 1 回退：特定 DOW + UNION 普通日"""
-    return (
-        f"SELECT * FROM {ctx.train_table} A "
-        f"WHERE EXISTS ("
-        f"SELECT * FROM {ctx.list_table} B WHERE B.HX={t['HX']} "
-        f"AND A.HOL_FLAG=0 "
-        f"AND A.DOW={dow_value} "
-        f"AND A.EX_DIF=B.EX_DIF "
-        f"AND {_EXISTS_TP_CMP} "
-        f"AND A.FLT_SEGMENT={ctx.exists_segment} "
-        f"AND A.HOLIDAY_SPRING_FESTIVAL=B.HOLIDAY_SPRING_FESTIVAL"
-        f")"
-    )
-
-
 def _exists_l1_decode_dow(ctx, t, decode_expr):
-    """Level 1 回退：DECODE 映射 DOW + UNION 普通日"""
+    """Level 1 回退：DECODE 映射 普通日DOW"""
     return (
         f"SELECT * FROM {ctx.train_table} A "
         f"WHERE EXISTS ("
         f"SELECT * FROM {ctx.list_table} B WHERE B.HX={t['HX']} "
-        f"AND A.HOL_FLAG=0 "
-        f"AND {decode_expr} "
-        f"AND A.EX_DIF=B.EX_DIF "
-        f"AND {_EXISTS_TP_CMP} "
-        f"AND A.FLT_SEGMENT={ctx.exists_segment} "
-        f"AND A.HOLIDAY_SPRING_FESTIVAL=B.HOLIDAY_SPRING_FESTIVAL"
+        f"AND A.HOL_FLAG=0 " # 限定为普通日
+        f"AND {decode_expr} " # 根据节前节后关系映射到特定 DOW
+        f"AND A.EX_DIF=B.EX_DIF " # 限定EX_DIF一致
+        f"AND {_EXISTS_TP_CMP} " # 限定TIME_PT一致
+        f"AND A.FLT_SEGMENT={ctx.exists_segment} " # 限定航段一致
+        f"AND A.HOLIDAY_SPRING_FESTIVAL=B.HOLIDAY_SPRING_FESTIVAL" # 剔除春运
+        f"{_flt_type_judge(ctx)}" # 独飞限定航司
         f")"
     )
 
+def _exists_l1_decode_dow_mid(ctx, t):
+    """Level 1 回退：DECODE 映射 普通日DOW"""
+    # 节前（按周五周期估计）
+    if t.get('HOLIDAY_RANGE')<=1:
+        decode_mid_holiday = ("DECODE(B.HOLIDAY_RANGE,-1,5, 1,5)=A.DOW")
+        return _exists_l1_decode_dow(ctx, t, decode_mid_holiday)
+    # 节后（按周五周期估计）
+    if t.get('HOLIDAY_RANGE')-t.get('HOLIDAY_BEFORE_AND_AFTER')>=0:
+        decode_mid_holiday = ("DECODE(B.HOLIDAY_RANGE,B.HOLIDAY_BEFORE_AND_AFTER,5, B.HOLIDAY_RANGE+1,B.HOLIDAY_BEFORE_AND_AFTER,5)=A.DOW")
+        return _exists_l1_decode_dow(ctx, t, decode_mid_holiday)
+    # 节中
+    else:
+        return (
+        f"SELECT * FROM {ctx.train_table} A "
+        f"WHERE EXISTS ("
+        f"SELECT * FROM {ctx.list_table} B WHERE B.HX={t['HX']} "
+        f"AND A.HOL_FLAG=0 " # 限定为普通日
+        f"AND A.EX_DIF=B.EX_DIF " # 限定EX_DIF一致
+        f"AND {_EXISTS_TP_CMP} " # 限定TIME_PT一致
+        f"AND A.FLT_SEGMENT={ctx.exists_segment} " # 限定航段一致
+        f"AND A.HOLIDAY_SPRING_FESTIVAL=B.HOLIDAY_SPRING_FESTIVAL" # 剔除春运
+        f"{_flt_type_judge(ctx)}" # 独飞限定航司
+        f"AND A.HOLIDAY_RANGE BETWEEN B.HOLIDAY_RANGE-1 AND B.HOLIDAY_RANGE+1" # 限定节中日期关系一致
+        f")"
+    )
 
-def _exists_l2_part1(ctx, t):
-    """Level 2 回退 Part 1：DOW 放宽 + EX_DIF>0"""
+def _exists_l2_decode_dow(ctx, t):
+    """Level 2 回退 ：DOW 进一步放宽"""
     return (
         f"SELECT * FROM {ctx.train_table} A "
         f"WHERE EXISTS ("
@@ -178,29 +194,13 @@ def _exists_l2_part1(ctx, t):
         f"AND A.HOL_FLAG=0 "
         f"AND A.DOW=B.DOW "
         f"AND A.EX_DIF=B.EX_DIF "
-        f"AND B.EX_DIF>0 "
-        f"AND {_EXISTS_TP_CMP} "
         f"AND A.FLT_SEGMENT={ctx.exists_segment} "
         f"AND A.HOLIDAY_SPRING_FESTIVAL=B.HOLIDAY_SPRING_FESTIVAL"
+        f"AND ((B.EX_DIF>0 AND ({_EXISTS_TP_CMP})) OR (B.EX_DIF = 0 AND B.TIME_PT>=A.TIME_PT))"
         f")"
     )
 
 
-def _exists_l2_part2(ctx, t):
-    """Level 2 回退 Part 2：DOW + TIME_PT 同时放宽"""
-    return (
-        f"SELECT * FROM {ctx.train_table} A "
-        f"WHERE EXISTS ("
-        f"SELECT * FROM {ctx.list_table} B WHERE B.HX={t['HX']} "
-        f"AND A.HOL_FLAG=0 "
-        f"AND A.DOW=B.DOW "
-        f"AND A.EX_DIF=B.EX_DIF "
-        f"AND B.EX_DIF=0 "
-        f"AND B.TIME_PT>=A.TIME_PT "
-        f"AND A.FLT_SEGMENT={ctx.exists_segment} "
-        f"AND A.HOLIDAY_SPRING_FESTIVAL=B.HOLIDAY_SPRING_FESTIVAL"
-        f")"
-    )
 
 
 # ============================================================
@@ -217,7 +217,7 @@ class DataFetchRule:
     def fetch(self, ctx, tmp_list):
         sql = self._build_sql(ctx, tmp_list)
         data = get_data(sql)
-        if len(data) < 1 and self.fallback:
+        if len(data) <= 0 and self.fallback:
             logging.info(
                 f"【DataFetchRules】[{self.name}] 样本不足({len(data)}条)，"
                 f"回退到 {self.fallback.name}")
@@ -242,7 +242,7 @@ def make_normal_day_chain(ctx):
               AND DOW={t['DOW']}
               AND HXJG_FLAG={t['HXJG_FLAG']}
               AND HOL_FLAG={t['HOL_FLAG']}
-              {"AND AIR_CODE IN ('MF','NS','RY')" if c.flt_type == 'SOLO_PART' else ""}
+              {_flt_type_judge(c)}
               {_season_clause(t)}
         """,
     )
@@ -256,7 +256,7 @@ def make_normal_day_chain(ctx):
               AND EX_DIF={t['EX_DIF']}
               {_time_pt_clause(t)}
               AND HXJG_FLAG={t['HXJG_FLAG']}
-              {"AND AIR_CODE IN ('MF','NS','RY')" if c.flt_type == 'SOLO_PART' else ""}
+              {_flt_type_judge(c)}
         """,
     )
 
@@ -265,60 +265,16 @@ def make_normal_day_chain(ctx):
 
 
 # ============================================================
-# 工厂函数：节假日 1 天规则链
+# 工厂函数：短假期 3 天及以下规则链
 # ============================================================
-def make_holiday_1day_chain(ctx):
-    """节假日放假 1 天（HOL_LAST=1, HOLIDAY_SPRING_FESTIVAL=0）"""
+def make_short_holiday_chain(ctx):
+    """短假期 3 天及以下规则链"""
 
     hol_where = lambda c, t: _hol_base_where(c, t)
-
-    level0 = DataFetchRule(
-        name="1天假-严格匹配",
-        build_sql=lambda c, t: f"""
-            SELECT * FROM {c.train_table} A
-            WHERE {hol_where(c, t)}
-        """,
-    )
-
-    level1 = DataFetchRule(
-        name="1天假-解除1级(DOW→6+UNION)",
-        build_sql=lambda c, t: f"""
-            SELECT * FROM {c.train_table} A
-            WHERE {hol_where(c, t)}
-            UNION ALL
-            {_exists_l1_specific_dow(c, t, 6)}
-        """,
-    )
-
-    level2 = DataFetchRule(
-        name="1天假-解除2级(全面放宽)",
-        build_sql=lambda c, t: f"""
-            SELECT * FROM {c.train_table} A
-            WHERE {hol_where(c, t)}
-            UNION ALL
-            {_exists_l2_part1(c, t)}
-            UNION ALL
-            {_exists_l2_part2(c, t)}
-        """,
-        fallback=None,
-    )
-
-    level0.fallback = level1
-    level1.fallback = level2
-    return level0
-
-
-# ============================================================
-# 工厂函数：节假日 3 天规则链
-# ============================================================
-def make_holiday_3day_chain(ctx):
-    """节假日放假 3 天（HOL_LAST=2, HOLIDAY_SPRING_FESTIVAL=0）"""
-
-    hol_where = lambda c, t: _hol_base_where(c, t)
-
-    decode_3day = (
+    # 节前1天对应周五，往后以此类推
+    decode_short_holiday = (
         "DECODE(B.HOLIDAY_RANGE,"
-        "-2,4, -1,5, 1,6, 2,6, 3,7, 4,1, 5,2"
+        "-1,5, 1,6, 2,6, 3,7, 4,1"
         ")=A.DOW"
     )
 
@@ -331,77 +287,52 @@ def make_holiday_3day_chain(ctx):
     )
 
     level1 = DataFetchRule(
-        name="3天假-解除1级(DECODE+UNION)",
+        name="3天假-解除1级(DECODE映射DOW)",
         build_sql=lambda c, t: f"""
-            SELECT * FROM {c.train_table} A
-            WHERE {hol_where(c, t)}
-            UNION ALL
-            {_exists_l1_decode_dow(c, t, decode_3day)}
+            {_exists_l1_decode_dow(c, t, decode_short_holiday)}
         """,
     )
 
     level2 = DataFetchRule(
         name="3天假-解除2级(全面放宽)",
         build_sql=lambda c, t: f"""
+            {_exists_l2_decode_dow(c, t)}
+        """,
+        fallback=None,
+    )
+
+    level0.fallback = level1
+    level1.fallback = level2
+    return level0
+
+
+# ============================================================
+# 工厂函数：中假期 4 天及以上规则链
+# ============================================================
+def make_mid_holiday_chain(ctx):
+    """中假期 4 天及以上规则链"""
+    
+    hol_where = lambda c, t: _hol_base_where(c, t)
+    # 节前1天对应周五，往后以此类推
+
+
+    level0 = DataFetchRule(
+        name="中假期 4 天及以上 -严格匹配",
+        build_sql=lambda c, t: f"""
             SELECT * FROM {c.train_table} A
             WHERE {hol_where(c, t)}
-            UNION ALL
-            {_exists_l2_part1(c, t)}
-            UNION ALL
-            {_exists_l2_part2(c, t)}
-        """,
-        fallback=None,
-    )
-
-    level0.fallback = level1
-    level1.fallback = level2
-    return level0
-
-
-# ============================================================
-# 工厂函数：4天以上节前规则链
-# ============================================================
-def make_holiday_4plus_pre_chain(ctx):
-    """4天以上假期节前（HOL_LAST>=3, HOLIDAY_RANGE<0）"""
-
-    decode_pre = "DECODE(B.HOLIDAY_RANGE,-2,4,-1,5)=A.DOW"
-
-    # Level 0 where: HOL_LAST>=3 AND HOLIDAY_RANGE<0 (不加精确 HOLIDAY_RANGE)
-    def _l0_where(c, t):
-        return (f"FLT_SEGMENT='{c.seg(t)}' AND "
-                f"EX_DIF={t['EX_DIF']} AND "
-                f"{c.tp(t)} AND "
-                f"HOLIDAY_SPRING_FESTIVAL={t['HOLIDAY_SPRING_FESTIVAL']} AND "
-                f"HOL_FLAG={t['HOL_FLAG']} AND "
-                f"HOL_LAST>=3 AND HOLIDAY_RANGE<0")
-
-    level0 = DataFetchRule(
-        name="4天+节前-严格匹配",
-        build_sql=lambda c, t: f"""
-            SELECT * FROM {c.train_table} A
-            WHERE {_l0_where(c, t)}
         """,
     )
 
     level1 = DataFetchRule(
-        name="4天+节前-解除1级(DECODE+UNION)",
-        build_sql=lambda c, t: f"""
-            SELECT * FROM {c.train_table} A
-            WHERE {_l0_where(c, t)}
-            UNION ALL
-            {_exists_l1_decode_dow(c, t, decode_pre)}
-        """,
+        name="中假期 4 天及以上-解除1级(DECODE映射DOW)",
+        build_sql=lambda c, t: f"""{_exists_l1_decode_dow_mid(c, t)}""",
     )
 
     level2 = DataFetchRule(
-        name="4天+节前-解除2级(全面放宽)",
+        name="中假期 4 天及以上-解除2级(全面放宽)",
         build_sql=lambda c, t: f"""
-            SELECT * FROM {c.train_table} A
-            WHERE {_l0_where(c, t)}
-            UNION ALL
-            {_exists_l2_part1(c, t)}
-            UNION ALL
-            {_exists_l2_part2(c, t)}
+            {_exists_l2_decode_dow(c, t)}
         """,
         fallback=None,
     )
@@ -409,202 +340,6 @@ def make_holiday_4plus_pre_chain(ctx):
     level0.fallback = level1
     level1.fallback = level2
     return level0
-
-
-# ============================================================
-# 工厂函数：4天以上节后规则链
-# ============================================================
-def make_holiday_4plus_post_chain(ctx):
-    """4天以上假期节后（HOL_LAST>=3, HOL_LAST-HOLIDAY_RANGE<0）"""
-
-    decode_post = "DECODE(B.HOLIDAY_RANGE,-2,2,-1,1)=A.DOW"
-
-    def _l0_where(c, t):
-        return (f"FLT_SEGMENT='{c.seg(t)}' AND "
-                f"EX_DIF={t['EX_DIF']} AND "
-                f"{c.tp(t)} AND "
-                f"HOLIDAY_SPRING_FESTIVAL={t['HOLIDAY_SPRING_FESTIVAL']} AND "
-                f"HOL_FLAG={t['HOL_FLAG']} AND "
-                f"HOL_LAST>=3 AND HOL_LAST-HOLIDAY_RANGE<0")
-
-    level0 = DataFetchRule(
-        name="4天+节后-严格匹配",
-        build_sql=lambda c, t: f"""
-            SELECT * FROM {c.train_table} A
-            WHERE {_l0_where(c, t)}
-        """,
-    )
-
-    level1 = DataFetchRule(
-        name="4天+节后-解除1级(DECODE+UNION)",
-        build_sql=lambda c, t: f"""
-            SELECT * FROM {c.train_table} A
-            WHERE {_l0_where(c, t)}
-            UNION ALL
-            {_exists_l1_decode_dow(c, t, decode_post)}
-        """,
-    )
-
-    level2 = DataFetchRule(
-        name="4天+节后-解除2级(全面放宽)",
-        build_sql=lambda c, t: f"""
-            SELECT * FROM {c.train_table} A
-            WHERE {_l0_where(c, t)}
-            UNION ALL
-            {_exists_l2_part1(c, t)}
-            UNION ALL
-            {_exists_l2_part2(c, t)}
-        """,
-        fallback=None,
-    )
-
-    level0.fallback = level1
-    level1.fallback = level2
-    return level0
-
-
-# ============================================================
-# 工厂函数：4天以上节中规则链
-# ============================================================
-def make_holiday_4plus_mid_chain(ctx):
-    """
-    4天以上假期节中（HOL_LAST>=3, 非节前非节后）。
-    内部按节日天数分 3 个子场景：
-      - 节中第1-2天（HOL_LAST 4-5: RANGE=1; HOL_LAST 6-8: RANGE 1-2）
-      - 节中最后1-2天（RANGE 接近 HOL_LAST）
-      - 节中其他天
-    """
-
-    # 我们给每个子场景构建它自己的规则链，然后在 fetch 时通过条件判断选择。
-    # 由于 DataFetchRule 只负责回退，条件分支需要在上层处理。
-    # 这里采用组合模式：节中的 3 个子场景共用同一个外部接口，
-    # 但内部根据 HOL_LAST 和 HOLIDAY_RANGE 选择不同的 SQL 模板。
-
-    # 为了保持与原代码行为一致，在 build_sql 中内联子场景判断。
-    def _mid_where(c, t):
-        hol_last = t['HOL_LAST']
-        hol_range = t['HOLIDAY_RANGE']
-
-        # 节中第1-2天
-        if (4 <= hol_last <= 5 and hol_range == 1) or \
-           (6 <= hol_last <= 8 and 1 <= hol_range <= 2):
-            return _mid_first_where(c, t, hol_last)
-        # 节中最后1-2天
-        elif (4 <= hol_last <= 5 and hol_range >= hol_last - 1 and hol_range <= hol_last) or \
-             (6 <= hol_last <= 8 and hol_range >= hol_last - 1 and hol_range <= hol_last):
-            return _mid_last_where(c, t, hol_last)
-        # 节中其他天
-        else:
-            return _mid_other_where(c, t, hol_last)
-
-    def _mid_extra_clause(t, hol_last):
-        """仅用于 Level 1 回退中的特定 DOW 映射"""
-        hol_range = t['HOLIDAY_RANGE']
-        # 节中第1-2天 → DOW=5；节中最后1-2天 → DOW=7；其他天 → DOW=6
-        if (4 <= hol_last <= 5 and hol_range == 1) or \
-           (6 <= hol_last <= 8 and 1 <= hol_range <= 2):
-            return (5, "A.DOW=5")
-        elif (4 <= hol_last <= 5 and hol_range >= hol_last - 1 and hol_range <= hol_last) or \
-             (6 <= hol_last <= 8 and hol_range >= hol_last - 1 and hol_range <= hol_last):
-            return (7, "A.DOW=7")
-        else:
-            return (6, "A.DOW=6")
-
-    # 由于 build_sql 是 lambda，节中场景需要动态选择 DOW 值，
-    # 所以在 build_sql 内部调用 _mid_extra_clause
-    level0 = DataFetchRule(
-        name="4天+节中-严格匹配",
-        build_sql=lambda c, t: f"""
-            SELECT * FROM {c.train_table} A
-            WHERE FLT_SEGMENT='{c.seg(t)}'
-              AND EX_DIF={t['EX_DIF']}
-              AND {c.tp(t)}
-              AND HOLIDAY_SPRING_FESTIVAL={t['HOLIDAY_SPRING_FESTIVAL']}
-              AND HOL_FLAG={t['HOL_FLAG']}
-              AND {_mid_where(c, t)}
-        """,
-    )
-
-    level1 = DataFetchRule(
-        name="4天+节中-解除1级(特定DOW+UNION)",
-        build_sql=lambda c, t: f"""
-            SELECT * FROM {c.train_table} A
-            WHERE FLT_SEGMENT='{c.seg(t)}'
-              AND EX_DIF={t['EX_DIF']}
-              AND {c.tp(t)}
-              AND HOLIDAY_SPRING_FESTIVAL={t['HOLIDAY_SPRING_FESTIVAL']}
-              AND HOL_FLAG={t['HOL_FLAG']}
-              AND {_mid_where(c, t)}
-            UNION ALL
-            {_exists_l1_specific_dow(c, t, _mid_extra_clause(t, t['HOL_LAST'])[0])}
-        """,
-    )
-
-    level2 = DataFetchRule(
-        name="4天+节中-解除2级(全面放宽)",
-        build_sql=lambda c, t: f"""
-            SELECT * FROM {c.train_table} A
-            WHERE FLT_SEGMENT='{c.seg(t)}'
-              AND EX_DIF={t['EX_DIF']}
-              AND {c.tp(t)}
-              AND HOLIDAY_SPRING_FESTIVAL={t['HOLIDAY_SPRING_FESTIVAL']}
-              AND HOL_FLAG={t['HOL_FLAG']}
-              AND {_mid_where(c, t)}
-            UNION ALL
-            {_exists_l2_part1(c, t)}
-            UNION ALL
-            {_exists_l2_part2(c, t)}
-        """,
-        fallback=None,
-    )
-
-    level0.fallback = level1
-    level1.fallback = level2
-    return level0
-
-
-# ---- 节中 3 个子场景的 WHERE 条件 ----
-
-def _mid_first_where(c, t, hol_last):
-    """4-8天假期节中第1-2天"""
-    if hol_last == 4:
-        return "HOL_LAST=4 AND HOLIDAY_RANGE=1"
-    elif hol_last == 5:
-        return "HOL_LAST=5 AND HOLIDAY_RANGE=1"
-    elif hol_last == 6:
-        return "HOL_LAST=6 AND HOLIDAY_RANGE BETWEEN 1 AND 2"
-    elif hol_last == 7:
-        return "HOL_LAST=7 AND HOLIDAY_RANGE BETWEEN 1 AND 2"
-    else:  # hol_last == 8
-        return "HOL_LAST=8 AND HOLIDAY_RANGE BETWEEN 1 AND 2"
-
-
-def _mid_last_where(c, t, hol_last):
-    """4-8天假期节中最后1-2天"""
-    if hol_last == 4:
-        return "HOL_LAST=4 AND HOLIDAY_RANGE=4"
-    elif hol_last == 5:
-        return "HOL_LAST=5 AND HOLIDAY_RANGE=5"
-    elif hol_last == 6:
-        return "HOL_LAST=6 AND HOLIDAY_RANGE BETWEEN 5 AND 6"
-    elif hol_last == 7:
-        return "HOL_LAST=7 AND HOLIDAY_RANGE BETWEEN 6 AND 7"
-    else:  # hol_last == 8
-        return "HOL_LAST=8 AND HOLIDAY_RANGE BETWEEN 7 AND 8"
-
-
-def _mid_other_where(c, t, hol_last):
-    """4-8天假期节中其他天"""
-    if hol_last == 4:
-        return "HOL_LAST=4 AND HOLIDAY_RANGE BETWEEN 2 AND 3"
-    elif hol_last == 5:
-        return "HOL_LAST=5 AND HOLIDAY_RANGE BETWEEN 2 AND 4"
-    elif hol_last == 6:
-        return "HOL_LAST=6 AND HOLIDAY_RANGE BETWEEN 2 AND 4"
-    elif hol_last == 7:
-        return "HOL_LAST=7 AND HOLIDAY_RANGE BETWEEN 3 AND 5"
-    else:  # hol_last == 8
-        return "HOL_LAST=8 AND HOLIDAY_RANGE BETWEEN 3 AND 6"
 
 
 # ============================================================
@@ -722,17 +457,10 @@ def _select_holiday_chain(ctx, tmp_list):
         return make_spring_festival_chain(ctx)
     # 清明、端午、中秋假期
     if hol_last == 1:
-        return make_holiday_1day_chain(ctx)
+        return make_short_holiday_chain(ctx)
     # 五一、国庆（拼假中秋）小长假
     if hol_last == 2:
-        return make_holiday_3day_chain(ctx)
-    if hol_last >= 3:
-        holiday_range = t.get('HOLIDAY_RANGE', 0)
-        if holiday_range < 0:
-            return make_holiday_4plus_pre_chain(ctx)
-        if hol_last - holiday_range < 0:
-            return make_holiday_4plus_post_chain(ctx)
-        return make_holiday_4plus_mid_chain(ctx)
+        return make_mid_holiday_chain(ctx)
     return None
 
 

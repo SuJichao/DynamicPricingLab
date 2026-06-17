@@ -21,7 +21,7 @@ from config.db_queries import (FLT_LIST_TABLE)
 
 # 主要业务场景
 from blocks.SmallPartFlight.SmallPartFlightAdvicePrice import small_part_flight_advice_price
-from blocks.SoloPartFlight.SoloPartFlightAdvicePrice import solo_part_flight_advice_price
+from blocks.SoloPartFlight.SoloPartFlightAdvicePriceLine import solo_part_flight_advice_price
 
 # 航班类型 → 预测执行函数 dispatch 表
 _FLIGHT_TYPE_HANDLERS = {

@@ -5,6 +5,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 
 from blocks.SoloPartFlight.SoloBkdPredictKNN import solo_knn_est_run
 from blocks.SoloPartFlight.SoloBkdSharpRise import bkd_sharp_rise
+from blocks.SoloPartFlight.SoloAdvicePrice import SoloFltAdvicePrice
 
 def solo_part_flight_advice_price(args):
     """独飞航线定价流水线入口。
@@ -18,12 +19,12 @@ def solo_part_flight_advice_price(args):
     # 1 利用KNN算法计算剩余销售期内的人数增量情况
     data = solo_knn_est_run(args)
     # 2 订座突增检测（基于订座增量 + 客座率阈值）
-    data = bkd_sharp_rise(data)
+    data = bkd_sharp_rise(args, data)
     # 3 基于航班销售进度和销售速度进行建议价格计算
-    data = solo_advice_price(args, result_data)
+    data = SoloFltAdvicePrice(args, data)
     # 4 规则后处理
-    result_data = true_price_up_down(args, 'SOLO_PART', result_data)
-    return result_data
+    # data = true_price_up_down(args, 'SOLO_PART', data)
+    return data
 
 if __name__ == '__main__':
     from config.runtime_args import get_argparse

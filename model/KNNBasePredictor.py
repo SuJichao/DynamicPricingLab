@@ -109,7 +109,7 @@ class KNNBasePredictor:
         raise NotImplementedError
 
     # --- 预测写回（子类覆盖） ---
-    def predict_write_back(self, y_pred, target_index):
+    def predict_write_back(self, y_pred, target_index, knn_list):
         """预测结果写回 + 后处理"""
         raise NotImplementedError
 
@@ -183,7 +183,7 @@ class KNNBasePredictor:
         y_pred, target_index = knn.predict(X_predict_std, Y_predict)
 
         # 写回（子类实现）
-        self.predict_write_back(y_pred, target_index)
+        self.predict_write_back(y_pred, target_index, knn_list)
 
     @staticmethod
     def _est_data_same(train_data, est_data):
@@ -220,7 +220,7 @@ class KNNBasePredictor:
 
         knn_list = self._load_knn_list()
 
-        if len(knn_list) > self.MULTIPROCESS_THRESHOLD:
+        if len(knn_list) < self.MULTIPROCESS_THRESHOLD:
             # 单进程模式
             logging.info(
                 f"【{self.__class__.__name__}】单进程模式，数据量：{len(knn_list)}")

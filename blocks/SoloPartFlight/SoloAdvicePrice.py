@@ -17,7 +17,6 @@ from config.pricing_constants import (
     SOLO_FLT_PRICE_MULTIPLIER_MIN,
     SOLO_FLT_TARGET_LOAD_FACTOR,
 )
-from config.db_queries import SOLO_SALES_RATIO_SQL
 from common.database_oracle import get_data, insert_data
 
 
@@ -53,28 +52,19 @@ class SoloFltAdvicePrice(object):
 
     def __init__(self, config, data):
         self.config = config
-        self.bottom_price_demand = data
-
-        # 获取库存限制数据（目前只有 D0-2 的航班数据）
-        sales_ratio = get_data(SOLO_SALES_RATIO_SQL)
-        sales_ratio = sales_ratio[['FLT_DATE', 'EX_DIF', 'FLT_NO', 'FLT_SEGMENT', 'MF_ZL_AHEAD']]
-        self.bottom_price_demand = pd.merge(
-            self.bottom_price_demand, sales_ratio,
-            on=['FLT_DATE', 'EX_DIF', 'FLT_NO', 'FLT_SEGMENT'], how='left'
-        )
-        self.bottom_price_demand['MF_ZL_AHEAD'].fillna(0, inplace=True)
+        self.data = data
 
         logging.info("【SoloFltAdvicePrice】%s 程序开始！", self.config.version_number)
-        self.solo_flt_max_min_price()
+        self.compute_advice_price()
 
     # ----------------------------------------------------------
     # 主流程
     # ----------------------------------------------------------
 
-    def solo_flt_max_min_price(self):
+    def compute_advice_price(self):
         """基础定价主流程：准备数据 → 计算建议价格 → 持久化。"""
         self._prepare_data()
-        self._compute_advice_price()
+        self._price_decision_making_chain()
         self._persist_result()
 
     # ----------------------------------------------------------
@@ -83,10 +73,10 @@ class SoloFltAdvicePrice(object):
 
     def _prepare_data(self):
         """填充缺失值、合并历史销售数据、计算辅助特征。"""
-        df = self.bottom_price_demand
+        df = self.data
         df['PRICE'].fillna(SOLO_FLT_FULL_PRICE_FALLBACK, inplace=True)
 
-        # 合并独飞历史1天销售数据
+        # 合并独飞历史销售数据
         hist_sales = get_data(
             'SELECT FLT_DATE,CARRIER,FLT_NO,FLT_SEGMENT,SRS_SALES,PJPJ_SALES,T_FLAG '
             'FROM TMP_DP_SOLO_SRS_HIS_PH'
@@ -98,19 +88,17 @@ class SoloFltAdvicePrice(object):
         # 剩余座位对应客座率
         df['SYZW_PLF'] = np.where(
             df['CAP'] - df['BKD'] > 0,
-            df['SRS_ZL_DETR_LEFT'] / (df['CAP'] - df['BKD']),
+            df['SRS_ZL_LEFT'] / (df['CAP'] - df['BKD']),
             0
         )
-        df['SRS_ZL_LEFT'] = df['SRS_ZL_DETR_LEFT']
-        df['BKD_INCOME_LEFT'] = 0
 
-        self.bottom_price_demand = df
+        self.data = df
 
     # ----------------------------------------------------------
     # 定价策略
     # ----------------------------------------------------------
 
-    def _compute_advice_price(self):
+    def _price_decision_making_chain(self):
         """计算 AI_ADVICE_PRICE。
 
         4 条策略分支，优先级从高到低：
@@ -119,7 +107,7 @@ class SoloFltAdvicePrice(object):
           3. T_FLAG >= 0         → 销售偏快/正常，客座率乘数 × (成交价 + T_FLAG折补)
           4. T_FLAG < 0          → 销售偏慢，客座率乘数 × 折后成交价，限制区间
         """
-        df = self.bottom_price_demand
+        df = self.data
         conds = [
             df['PRICE_INCREASE'] > 0,
             df['EX_DIF'] >= 29,
@@ -192,6 +180,4 @@ class SoloFltAdvicePrice(object):
         insert_data("SOLO_FLIGHT_ADVICE_DATA_COPY", tmp_data)
 
 
-if __name__ == '__main__':
-    args = get_argparse()
-    SoloFltAdvicePrice(args)
+

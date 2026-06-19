@@ -61,15 +61,16 @@ class SoloFlightNumberIncreaseKNN(KNNBasePredictor):
         return 'SOLO_PART'
 
     def _get_cleanup_sql(self):
-        return
-        # return "DELETE FROM TMP_SOLO_FLIGHT_KNN_TARGET"
+        # return
+        return "DELETE FROM SOLO_FLIGHT_KNN_TARGET"
 
     # --- 特征工程 ---
     def data_deal(self, data):
         """独飞特征：deptime_sin/cos + date_sin/cos + chunjie_sin"""
         data['FLT_DATE'] = pd.to_datetime(data['FLT_DATE'])
         data['DEP_TIME'] = data['DEP_HOUR'] + data['DEP_MINUTE'] / 60
-        data.loc[:, 'YEAR'] = data['FLT_DATE'].dt.year
+        data.loc[:, 'FLT_YEAR'] = data['FLT_DATE'].dt.year
+        data.loc[:, 'FLT_MONTH'] = data['FLT_DATE'].dt.month
 
         # 离港时间的正余弦函数
         data['deptime_sin'] = np.sin(2 * np.pi * data['DEP_TIME'] / 23.0)
@@ -89,26 +90,26 @@ class SoloFlightNumberIncreaseKNN(KNNBasePredictor):
             self.X_label_col = ['HOLIDAY_RANGE', 'deptime_sin', 'deptime_cos', 'HXJG_FLAG']
 
     # --- 预测写回 ---
-    def predict_write_back(self, y_pred, target_index):
-        """独飞特有的写回逻辑：插入 TMP_SOLO_FLIGHT_KNN_TARGET + D0 特殊处理"""
+    def predict_write_back(self, y_pred, target_index, knn_list):
+        """独飞特有的写回逻辑：插入 SOLO_FLIGHT_KNN_TARGET + D0 特殊处理"""
 
         # 插入近邻样本数据
-        target_data = self.train_data.iloc[target_index]
+        target_data = self.train_data.iloc[target_index].copy()
         target_data['CREATE_TIME'] = self.config.create_time
-        target_data = target_data.iloc[:, :43]
-        insert_data("TMP_SOLO_FLIGHT_KNN_TARGET", target_data)
+        # target_data = target_data.iloc[:, :43]
+        target_data.loc[:, 'HX'] = knn_list[0]
+        insert_data("SOLO_FLIGHT_KNN_TARGET", target_data)
 
         # 将预测数据写回待预测数据
-        # D0数据特殊处理：防止D0样本都是起飞时间靠后的样本导致人数增量预测偏高
         for i, col in enumerate(self.Y_label_col):
             self.predict_data[col] = y_pred[:, i]
         self.tmp_data = self.predict_data
 
     # --- 后处理 ---
     def _post_process(self):
-        """独飞后处理：SRS_ZL_DETR_LEFT 不低于 1"""
-        self.result_data['SRS_ZL_DETR_LEFT'] = np.maximum(
-            self.result_data['SRS_ZL_DETR_LEFT'], 1)
+        """独飞后处理：SRS_ZL_LEFT 不低于 1"""
+        self.result_data['SRS_ZL_LEFT'] = np.maximum(
+            self.result_data['SRS_ZL_LEFT'], 1)
 
 
 # ============================================================

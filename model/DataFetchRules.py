@@ -29,7 +29,6 @@ class FetchContext:
     关键差异点：
       segment(t)         航段字段值        t['DEP']+t['ARR'] / t['FLT_SEGMENT']
       time_pt(t)         TIME_PT 条件     两套不同的 EX_DIF→TIME_PT 映射
-      exists_segment     EXISTS 中段引用   B.DEP||B.ARR / B.FLT_SEGMENT
       holiday_pred_extra 节假日预测额外条件 小份额有 FLT_NO 过滤
       normal_levels      普通日回退级数     3(小份额) / 2(独飞)
     """
@@ -99,9 +98,9 @@ SOLO_FLT_FETCH_CONTEXT = FetchContext(
 def _season_clause(t):
     month = t.get('MONTH', 0)
     if 7 <= month <= 8:
-        return "AND TO_NUMBER(TO_CHAR(FLT_DATE,'MM')) BETWEEN 7 AND 8"
+        return "TO_NUMBER(TO_CHAR(FLT_DATE,'MM')) BETWEEN 7 AND 8"
     elif month < 7 or month > 8:
-        return "AND (TO_NUMBER(TO_CHAR(FLT_DATE,'MM')) > 8 OR TO_NUMBER(TO_CHAR(FLT_DATE,'MM')) < 7)"
+        return "(TO_NUMBER(TO_CHAR(FLT_DATE,'MM')) > 8 OR TO_NUMBER(TO_CHAR(FLT_DATE,'MM')) < 7)"
     return ""
 # ============================================================
 # 辅助：根据EX_DIF自动计算TIME_PT的 SQL 片段
@@ -120,7 +119,7 @@ _EXISTS_TP_CMP = (
 # 辅助：判断是否为独飞航班的SQL片段
 # ============================================================
 def _flt_type_judge(c):
-    return{"AND AIR_CODE IN ('MF','NS','RY')" if c.flt_type == 'SOLO_PART' else ""}
+    return "AIR_CODE IN ('MF','NS','RY')" if c.flt_type == 'SOLO_PART' else ""
 
 # ============================================================
 # 辅助：节假日字段的 SQL 片段
@@ -153,9 +152,9 @@ def _exists_l1_decode_dow(ctx, t, decode_expr):
         f"AND {decode_expr} " # 根据节前节后关系映射到特定 DOW
         f"AND A.EX_DIF=B.EX_DIF " # 限定EX_DIF一致
         f"AND {_EXISTS_TP_CMP} " # 限定TIME_PT一致
-        f"AND A.FLT_SEGMENT={ctx.exists_segment} " # 限定航段一致
-        f"AND A.HOLIDAY_SPRING_FESTIVAL=B.HOLIDAY_SPRING_FESTIVAL" # 剔除春运
-        f"{_flt_type_judge(ctx)}" # 独飞限定航司
+        f"AND A.FLT_SEGMENT=B.FLT_SEGMENT " # 限定航段一致
+        f"AND A.HOLIDAY_SPRING_FESTIVAL=B.HOLIDAY_SPRING_FESTIVAL " # 剔除春运
+        f"AND {_flt_type_judge(ctx)}" # 独飞限定航司
         f")"
     )
 
@@ -178,9 +177,9 @@ def _exists_l1_decode_dow_mid(ctx, t):
         f"AND A.HOL_FLAG=0 " # 限定为普通日
         f"AND A.EX_DIF=B.EX_DIF " # 限定EX_DIF一致
         f"AND {_EXISTS_TP_CMP} " # 限定TIME_PT一致
-        f"AND A.FLT_SEGMENT={ctx.exists_segment} " # 限定航段一致
-        f"AND A.HOLIDAY_SPRING_FESTIVAL=B.HOLIDAY_SPRING_FESTIVAL" # 剔除春运
-        f"{_flt_type_judge(ctx)}" # 独飞限定航司
+        f"AND A.FLT_SEGMENT=B.FLT_SEGMENT " # 限定航段一致
+        f"AND A.HOLIDAY_SPRING_FESTIVAL=B.HOLIDAY_SPRING_FESTIVAL " # 剔除春运
+        f"AND {_flt_type_judge(ctx)} " # 独飞限定航司
         f"AND A.HOLIDAY_RANGE BETWEEN B.HOLIDAY_RANGE-1 AND B.HOLIDAY_RANGE+1" # 限定节中日期关系一致
         f")"
     )
@@ -194,8 +193,8 @@ def _exists_l2_decode_dow(ctx, t):
         f"AND A.HOL_FLAG=0 "
         f"AND A.DOW=B.DOW "
         f"AND A.EX_DIF=B.EX_DIF "
-        f"AND A.FLT_SEGMENT={ctx.exists_segment} "
-        f"AND A.HOLIDAY_SPRING_FESTIVAL=B.HOLIDAY_SPRING_FESTIVAL"
+        f"AND A.FLT_SEGMENT=B.FLT_SEGMENT "
+        f"AND A.HOLIDAY_SPRING_FESTIVAL=B.HOLIDAY_SPRING_FESTIVAL "
         f"AND ((B.EX_DIF>0 AND ({_EXISTS_TP_CMP})) OR (B.EX_DIF = 0 AND B.TIME_PT>=A.TIME_PT))"
         f")"
     )
@@ -216,6 +215,8 @@ class DataFetchRule:
 
     def fetch(self, ctx, tmp_list):
         sql = self._build_sql(ctx, tmp_list)
+        # 可选：打印 SQL 用于调试
+        # logging.debug(f"Executing SQL for 【DataFetchRules】[{self.name}]: {sql}")
         data = get_data(sql)
         if len(data) <= 0 and self.fallback:
             logging.info(
@@ -238,12 +239,12 @@ def make_normal_day_chain(ctx):
             FROM {c.train_table} A
             WHERE FLT_SEGMENT='{c.seg(t)}'
               AND EX_DIF={t['EX_DIF']}
-              {_time_pt_clause(t)}
+              AND {_time_pt_clause(t)}
               AND DOW={t['DOW']}
               AND HXJG_FLAG={t['HXJG_FLAG']}
               AND HOL_FLAG={t['HOL_FLAG']}
-              {_flt_type_judge(c)}
-              {_season_clause(t)}
+              AND {_flt_type_judge(c)}
+              AND {_season_clause(t)}
         """,
     )
 
@@ -254,9 +255,9 @@ def make_normal_day_chain(ctx):
             FROM {c.train_table} A
             WHERE FLT_SEGMENT='{c.seg(t)}'
               AND EX_DIF={t['EX_DIF']}
-              {_time_pt_clause(t)}
+              AND {_time_pt_clause(t)}
               AND HXJG_FLAG={t['HXJG_FLAG']}
-              {_flt_type_judge(c)}
+              AND {_flt_type_judge(c)}
         """,
     )
 

@@ -22,10 +22,12 @@
     # 验证连接
     result = verify_connection()
 """
+import atexit
 import configparser
 import logging
 import os
 import sys
+import time
 
 import cx_Oracle
 import pandas as pd
@@ -188,7 +190,75 @@ def _get_pool():
             increment=_config['pool_inc'],  # 连接不足时每次新增数量
             threaded=True,           # 启用线程安全模式
         )
+        # 注册退出清理（多进程兼容：每个子进程独立注册）
+        _register_cleanup()
     return _pool
+
+
+# ---------------------------------------------------------------------------
+# 多进程兼容：子进程退出时的 Oracle 资源清理
+# ---------------------------------------------------------------------------
+# 在 spawn 多进程模式下，子进程退出前必须显式释放 cx_Oracle 的 memoryview
+# 缓冲区，否则 Python GC 在 Oracle 仍持有缓冲区引用时清理对象会导致：
+#   - BufferError: memoryview has 1 exported buffer
+#   - ORA-24550: signal received (Access Violation c0000005)
+# ---------------------------------------------------------------------------
+
+_cleanup_registered = False
+
+
+def _cleanup_pool():
+    """显式销毁 Oracle 连接池，释放所有连接和内存缓冲区。
+
+    在多进程 spawn 模式下，每个子进程退出前应调用此函数，
+    确保 cx_Oracle 的 memoryview 缓冲区在 Python GC 之前被正确释放，
+    避免 BufferError 和 ORA-24550 段错误。
+
+    清理顺序：
+        1. pool.close()  — 阻止新连接请求
+        2. 等待活动连接归还（最多 5 秒）
+        3. pool.terminate() — 强制终止剩余连接
+    """
+    global _pool, _config
+    if _pool is not None:
+        try:
+            _pool.close()
+            start = time.time()
+            while _pool.opened and (time.time() - start) < 5:
+                time.sleep(0.1)
+            if _pool.opened:
+                _pool.terminate()
+        except Exception:
+            try:
+                _pool.terminate()
+            except Exception:
+                pass
+        finally:
+            _pool = None
+    _config = None
+
+
+def _register_cleanup():
+    """注册 atexit 钩子，确保进程退出时释放 Oracle 资源。
+
+    使用模块级 _cleanup_registered 标志防止重复注册。
+    在 spawn 多进程模式下，每个子进程首次创建连接池时独立注册。
+    """
+    global _cleanup_registered
+    if not _cleanup_registered:
+        atexit.register(_cleanup_pool)
+        _cleanup_registered = True
+
+
+def reset_pool():
+    """重置模块级连接池状态，支持故障后重新初始化。
+
+    用于多进程失败后回退到单进程模式时，
+    确保使用全新的连接池而非残留状态。
+    """
+    global _pool, _config, _cleanup_registered
+    _cleanup_pool()
+    _cleanup_registered = False
 
 
 # ---------------------------------------------------------------------------
@@ -408,6 +478,9 @@ def get_data(sql):
     with Oracle() as db:
         col_names = db.queryTitle(sql)
         data = pd.DataFrame(db.queryBy(sql), columns=col_names)
+        # 强制拷贝断开 cx_Oracle 的 memoryview 缓冲区引用
+        # 避免 with 块退出归还连接后，GC 回收 memoryview 时触发 BufferError / ORA-24550
+        data = data.copy()
     return data
 
 
@@ -434,6 +507,8 @@ def get_predict_data_param(sql, param1):
         named_params = {'param1': param1}
         col_names = db.queryTitle(sql, named_params)
         data = pd.DataFrame(db.queryBy(sql, named_params), columns=col_names)
+        # 强制拷贝断开 cx_Oracle 的 memoryview 缓冲区引用
+        data = data.copy()
     return data
 
 

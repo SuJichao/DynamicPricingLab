@@ -43,7 +43,7 @@ def _execute_manual_run(args, refresh_data=False):
         f'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】'
         f'{args.version_number} 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
     if refresh_data:
-        callproc('RM_DP_FLT_EST_INPUT_CHG')
+        callproc('DP_EST_DATA_CHG')
     run(args)
     delete_deduplication_data()
 
@@ -91,7 +91,9 @@ def _process_flight_type(args, flt_type, data_set):
 # 主函数
 # =============================================================
 def run(args):
-    _init_multiprocessing()
+    mp_enabled = _init_multiprocessing()
+    if not mp_enabled:
+        logging.info("多进程已禁用，程序将以单进程模式运行")
     # 1 获取待预测数据
     data_set, flt_list = getpredictdata(args)
     # 2 根据不同类型的航班进行处理
@@ -107,13 +109,16 @@ def run(args):
 
     # 建议价格数据输出和处理
     try:
+        pass
         advice_price_output()
     except Exception as e:
         _alert_error(e)
 
 
 def timeliness_assessment(args):
-    _init_multiprocessing()
+    mp_enabled = _init_multiprocessing()
+    if not mp_enabled:
+        logging.info("多进程已禁用，程序将以单进程模式运行")
     # 判断为真，说明最新批次的数据已经到位，否则不予执行
     if not data_timeliness(args):
         logging.warning('===数据过期，自动跳过本次程序执行！！！===')
@@ -133,7 +138,6 @@ if __name__ == '__main__':
     _init_multiprocessing()
     get_logger()
     choice = _show_menu()
-
     if choice in (1, 2):
         args = get_argparse()
         _execute_manual_run(args, refresh_data=(choice == 2))

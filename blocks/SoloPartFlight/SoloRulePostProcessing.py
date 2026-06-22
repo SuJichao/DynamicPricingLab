@@ -5,8 +5,8 @@
   - 情况8：航线兜底底价设置
   - 输出格式化
 """
-import logging
 
+import uuid
 import numpy as np
 import pandas as pd
 
@@ -29,13 +29,13 @@ def _apply_ns_baggage_rule(df):
     """情况6：NS 航班（不含 PKX 进出港）在 29-31 折之间提价到 31 折（含行李）。"""
     mask = (
         (df['AIR_CODE'] == 'NS')
-        & ~(df['ROUTE'].str.contains('PKX'))
+        & ~(df['FLT_ROUTE'].str.contains('PKX'))
         & (df['ADVICE_PRICE'] / df['PRICE'] >= SOLO_NS_BAGGAGE_LOWER_DISCOUNT)
         & (df['ADVICE_PRICE'] / df['PRICE'] < SOLO_NS_BAGGAGE_TARGET_DISCOUNT)
     )
     df['ADVICE_PRICE'] = np.where(
         mask,
-        df['FULL_PRICE'] * SOLO_NS_BAGGAGE_TARGET_DISCOUNT,
+        df['PRICE'] * SOLO_NS_BAGGAGE_TARGET_DISCOUNT,
         df['ADVICE_PRICE']
     )
     return df
@@ -50,8 +50,8 @@ def _apply_route_floor_price(df):
     4. 最终建议价格不低于底价且不高于全票价
     """
     # 获取航线兜底价格数据
-    df = pd.merge(df, get_data(FLIGHT_PRICE_BOTTOM_SQL),
-                  on=['FLT_SEGMENT', 'FLT_NO'], how='left')
+    df = pd.merge(df, get_data(f"SELECT * FROM {FLIGHT_PRICE_BOTTOM_SQL}"),
+                  on=['FLT_SEGMENT', 'AIR_CODE', 'FLT_NO'], how='left')
 
     # 分离无底价记录，筛选有效期内的有底价记录
     no_floor = df[df['PRICE_BOTTOM'].isna()].copy()
@@ -74,12 +74,10 @@ def _apply_route_floor_price(df):
 
 def _format_output(df, config):
     """格式化输出：选择列、重命名、添加占位列、固定列序。"""
-    output = df[[
-        'CATCH_DATE', 'CATCH_TIME', 'TIME_PT', 'EX_DIF', 'DOW', 'FLT_DATE',
-        'AIR_CODE', 'FLT_NO', 'FLT_SEGMENT', 'ROUTE', 'HXJG_FLAG',
-        'ADVICE_PRICE', 'DEP_HOUR', 'DEP_MINUTE', 'CAP', 'DISCAP', 'BKD',
-        'PRICE_OTA', 'PRICE', 'PJPJ_MIN', 'UP_DATE',
-        'BKD_INCOME_LEFT', 'SRS_ZL_LEFT',
+
+    output = df[['CATCH_DATE', 'TIME_PT', 'EX_DIF', 'DOW', 'FLT_DATE', 'AIR_CODE', 'FLT_NO', 'FLT_SEGMENT', 'FLT_ROUTE',
+        'HXJG_FLAG', 'DEP_HOUR', 'DEP_MINUTE', 'CAP', 'DISCAP', 'BKD', 'PRICE_OTA', 'PRICE', 'PJPJ_FINAL', 'SRS_SALES',
+        'PJPJ_SALES', 'BKD_PLF_EST', 'SRS_ZL_LEFT', 'T_FLAG', 'ADVICE_PRICE', 'CREATE_TIME'
     ]].copy()
 
     output.rename(columns={
@@ -87,12 +85,13 @@ def _format_output(df, config):
         'PRICE': 'FULL_PRICE',
         'BKD_INCOME_LEFT': 'EXPECTED_RETURN',
         'SRS_ZL_LEFT': 'BKD_ISSUED_NUM_INC',
-        'ROUTE': 'FLT_ROUTE',
+        'ADVICE_PRICE': 'AVG_FARE_SK'
+
     }, inplace=True)
     output.reset_index(drop=True, inplace=True)
 
     # 占位列（保持与其他航线模块的列对齐）
-    output['WEB_ID'] = 0
+    output['WBD_ID'] = 0
     output['AVG_FARE_SK_IND'] = 0
     output['AVG_FARE_DELTA'] = 0
     output['PSG_CHO_PROB'] = 0
@@ -101,17 +100,18 @@ def _format_output(df, config):
     output['MAX_DEP_HOUR'] = 0
     output['OBJECT_FLT'] = 'MF8888'
     output['IND_BKD_ISSUED_NUM_INC'] = 0
-    output['CREATE_TIME'] = config.create_time
+    output['PID'] = [str(uuid.uuid1()) for _ in range(len(output))]
+    output['EXPECTED_RETURN'] = 0
 
     # 固定列序
     result = output[[
         'CATCH_DATE', 'EX_DIF', 'TIME_PT', 'FLT_DATE', 'AIR_CODE', 'FLT_NO',
         'FLT_SEGMENT', 'FLT_ROUTE', 'IS_STOPOVER_FLT', 'DEP_HOUR', 'DEP_MINUTE',
-        'WEB_ID', 'CAP', 'DISCAP', 'FULL_PRICE', 'BKD', 'AVG_FARE_SK',
+        'WBD_ID', 'CAP', 'DISCAP', 'FULL_PRICE', 'BKD', 'AVG_FARE_SK',
         'AVG_FARE_SK_IND', 'AVG_FARE_DELTA', 'PSG_CHO_PROB', 'PROB_PRIOR',
         'PSG_CHO_PROB_DELTA', 'MAX_DEP_HOUR', 'OBJECT_FLT',
         'IND_BKD_ISSUED_NUM_INC', 'BKD_ISSUED_NUM_INC', 'EXPECTED_RETURN',
-        'CREATE_TIME',
+        'CREATE_TIME', 'PID',
     ]]
     return result
 
@@ -134,4 +134,4 @@ def rule_post_processing(config, data):
     df = _apply_route_floor_price(df)
     result = _format_output(df, config)
 
-    return {'solo_flt_advice_price_result': result}
+    return result

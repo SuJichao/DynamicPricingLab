@@ -8,13 +8,12 @@ from common.database_oracle import get_data, delete_data, insert_data
 from common.request import advicePriceUpdate
 
 def advice_price_output():
-    rm_dp_data = get_data(f"SELECT * FROM TMP_MAX_RETURN_ADVICE_PRICE_V2")
+    rm_dp_data = get_data(f"SELECT * FROM TMP_MAX_RETURN_ADVICE_PRICE").copy()
     # 1 先将数据传输至收益管理系统
-    rm_tmp_data = rm_dp_data
-    rm_tmp_data['FLT_DATE'] = rm_tmp_data['FLT_DATE'].astype('str')
-    rm_tmp_data['CATCH_DATE'] = rm_tmp_data['CATCH_DATE'].astype('str')
-    rm_tmp_data['CREATE_TIME'] = rm_tmp_data['CREATE_TIME'].astype('str')
-    json_flt_price_advice_result = rm_tmp_data.to_dict(orient='records')
+    rm_dp_data['FLT_DATE'] = rm_dp_data['FLT_DATE'].astype('str')
+    rm_dp_data['CATCH_DATE'] = rm_dp_data['CATCH_DATE'].astype('str')
+    rm_dp_data['CREATE_TIME'] = rm_dp_data['CREATE_TIME'].astype('str')
+    json_flt_price_advice_result = rm_dp_data.to_dict(orient='records')
     response = advicePriceUpdate(json_flt_price_advice_result)
     # response_test = advicePriceUpdate_test(json_flt_price_advice_result)
     logging.info(f'生产环境接口：{response}')#===测试环境接口：{response_test}
@@ -25,12 +24,6 @@ def advice_price_output():
     GROUP BY FLT_DATE,FLT_SEGMENT,FLT_NO
     HAVING COUNT(*)>1
     '''
-
-    # 将已经处理好的数据插入值最终表
-    rm_dp_data = get_data(f"SELECT * FROM TMP_MAX_RETURN_ADVICE_PRICE_V2")
-    delete_data(
-        """DELETE FROM TMP_MAX_RETURN_ADVICE_PRICE""")
-    insert_data("TMP_MAX_RETURN_ADVICE_PRICE", rm_dp_data)
 
 
 

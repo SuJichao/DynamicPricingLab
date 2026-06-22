@@ -28,7 +28,11 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
 from common.database_oracle import get_data, delete_data, insert_data
+from common.basic_helper_fuction import is_multiprocessing_enabled
 from model.DataFetchRules import fetch_train_data, fetch_predict_data
+from config.pricing_constants import (
+    MP_MAX_WORKERS,MP_MAX_TASKS_PER_CHILD
+)
 
 
 # ============================================================
@@ -65,6 +69,7 @@ def _mp_worker(args):
     predictor = predictor_cls(config)
 
     # 调用原有的实例级 worker 方法
+    # 注：get_data() 内部已做 .copy()，返回数据不持有 Oracle 缓冲区引用
     return predictor.worker(i)
 
 
@@ -249,8 +254,44 @@ class KNNBasePredictor:
             data = self.tmp_data
         return data
 
+    def _run_single_process(self, knn_list):
+        """单进程处理：逐条遍历预测列表。
+
+        此方法同时服务于：
+        - 数据量低于阈值时的常规单进程路径
+        - 多进程崩溃后的回退（fallback）路径
+
+        Args:
+            knn_list: DataFrame，预测列表
+        """
+        logging.info(
+            f"【{self.__class__.__name__}】单进程模式，数据量：{len(knn_list)}"
+        )
+        results = []
+        for idx, (_, row) in enumerate(knn_list.iterrows()):
+            try:
+                self.predict_data = self.fetch_predict_data(row)
+                self.train_data = self.fetch_train_data(row)
+                if len(self.train_data) > 0:
+                    self.knn_est(row)
+                    results.append(self.tmp_data)
+            except Exception as e:
+                logging.error(
+                    f"【{self.__class__.__name__}】单进程任务 {idx + 1} 失败: {e}",
+                    exc_info=True
+                )
+        self.result_data = (
+            pd.concat(results, ignore_index=True) if results else pd.DataFrame()
+        )
+
     def run(self):
-        """主执行入口：单进程/多进程调度"""
+        """主执行入口：单进程/多进程调度。
+
+        多进程模式下已内置多重防护：
+        - 捕获 BrokenPipeError 等 IPC 异常后自动回退到单进程
+        - 检查调试器附加状态 / 环境变量 DISABLE_MULTIPROCESSING 自动降级
+        - get_data() 内 .copy() 断开 Oracle memoryview 引用，避免 GC 崩溃
+        """
         logging.info(f"【{self.__class__.__name__}】程序开始！")
 
         # 清理临时表
@@ -260,36 +301,40 @@ class KNNBasePredictor:
 
         knn_list = self._load_knn_list()
 
-        if len(knn_list) < self.MULTIPROCESS_THRESHOLD:
-            # 单进程模式
-            logging.info(
-                f"【{self.__class__.__name__}】单进程模式，数据量：{len(knn_list)}")
-            results = []
-            for _, row in knn_list.iterrows():
-                self.predict_data = self.fetch_predict_data(row)
-                self.train_data = self.fetch_train_data(row)
-                if len(self.train_data) > 0:
-                    self.knn_est(row)
-                    results.append(self.tmp_data)
-            self.result_data = (
-                pd.concat(results, ignore_index=True) if results else pd.DataFrame()
-            )
+        # 判断是否走多进程路径
+        use_multiprocessing = (
+            len(knn_list) >= self.MULTIPROCESS_THRESHOLD
+            and is_multiprocessing_enabled()
+        )
+
+        if not use_multiprocessing:
+            # 单进程模式（数据量不足 或 环境变量禁用了多进程）
+            if not is_multiprocessing_enabled():
+                logging.info(
+                    f"【{self.__class__.__name__}】多进程已被环境变量禁用，"
+                    f"使用单进程模式，数据量：{len(knn_list)}"
+                )
+            self._run_single_process(knn_list)
         else:
             # 多进程模式
-            num_cores = min(mp.cpu_count(), 4)
+            num_cores = min(mp.cpu_count(), MP_MAX_WORKERS)
             logging.info(
-                f"【{self.__class__.__name__}】{num_cores}进程模式，数据量：{len(knn_list)}")
+                f"【{self.__class__.__name__}】触发{num_cores}进程模式，"
+                f"数据量：{len(knn_list)}"
+            )
+
+            # 构造参数：类路径（用于子进程动态导入）+ 配置字典 + 行索引
+            class_path = (
+                f"{self.__class__.__module__}."
+                f"{self.__class__.__qualname__}"
+            )
+            config_dict = vars(self.config)
+            task_args = [
+                (class_path, config_dict, i)
+                for i in range(len(knn_list))
+            ]
+
             try:
-                # 构造参数：类路径（用于子进程动态导入）+ 配置字典 + 行索引
-                class_path = (
-                    f"{self.__class__.__module__}."
-                    f"{self.__class__.__qualname__}"
-                )
-                config_dict = vars(self.config)
-                task_args = [
-                    (class_path, config_dict, i)
-                    for i in range(len(knn_list))
-                ]
                 with Pool(processes=num_cores) as pool:
                     results = list(
                         pool.imap_unordered(_mp_worker, task_args)
@@ -301,14 +346,29 @@ class KNNBasePredictor:
                         )
                     else:
                         self.result_data = pd.DataFrame()
+            except (BrokenPipeError, ConnectionResetError,
+                    ConnectionAbortedError, ProcessLookupError) as e:
+                # 子进程崩溃导致 IPC 异常 → 回退到单进程
+                logging.error(
+                    f"【{self.__class__.__name__}】多进程 IPC 异常，"
+                    f"回退到单进程模式: {e}",
+                    exc_info=True
+                )
+                self._run_single_process(knn_list)
             except Exception as e:
-                logging.error(f"多进程处理失败: {str(e)}")
+                logging.error(
+                    f"【{self.__class__.__name__}】多进程处理失败，"
+                    f"回退到单进程模式: {e}",
+                    exc_info=True
+                )
+                self._run_single_process(knn_list)
 
         # 后处理
-        self.result_data = self.result_data.sort_values(
-            by=['FLT_SEGMENT', 'FLT_DATE'], ascending=[True, True]
-        )
-        self.result_data.reset_index(drop=True, inplace=True)
+        if not self.result_data.empty:
+            self.result_data = self.result_data.sort_values(
+                by=['FLT_SEGMENT', 'FLT_DATE'], ascending=[True, True]
+            )
+            self.result_data.reset_index(drop=True, inplace=True)
         self._post_process()
         return self.result_data
 

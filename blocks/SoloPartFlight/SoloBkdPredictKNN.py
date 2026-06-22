@@ -44,9 +44,6 @@ class SoloFlightNumberIncreaseKNN(KNNBasePredictor):
         self.X_label_col = list(SOLO_KNN_FEATURE_COLS)
         self.Y_label_col = list(SOLO_KNN_TARGET_COLS)
 
-        logging.info(
-            f"【SoloFlightNumberIncreaseKNN】{config.version_number} 程序开始！")
-
     # --- 表名获取 ---
     def _get_train_table(self):
         return SOLO_ADVICE_PRICE_TRAIN_TABLE

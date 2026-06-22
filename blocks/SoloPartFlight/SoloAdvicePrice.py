@@ -1,6 +1,6 @@
 """
 【程序目的】
-针对独飞航线，在订座突增检测完成后进行基础定价（AI_ADVICE_PRICE）。
+针对独飞航线，在订座突增检测完成后进行基础定价（ADVICE_PRICE）。
 输入需已含 BKD_PLF_EST 和突增检测结果（ADVICE_PRICE、PRICE_INCREASE）。
 """
 import logging
@@ -16,6 +16,7 @@ from config.pricing_constants import (
     SOLO_FLT_PRICE_MULTIPLIER_MAX,
     SOLO_FLT_PRICE_MULTIPLIER_MIN,
     SOLO_FLT_TARGET_LOAD_FACTOR,
+    round_to_10,
 )
 from common.database_oracle import get_data, insert_data
 
@@ -25,11 +26,11 @@ from common.database_oracle import get_data, insert_data
 # ============================================================
 
 OUTPUT_COLS = [
-    'CATCH_DATE', 'CATCH_TIME', 'TIME_PT', 'EX_DIF', 'DOW', 'FLT_DATE',
-    'AIR_CODE', 'FLT_NO', 'FLT_SEGMENT', 'ROUTE', 'HXJG_FLAG', 'DEP_HOUR',
+    'CATCH_DATE', 'TIME_PT', 'EX_DIF', 'DOW', 'FLT_DATE',
+    'AIR_CODE', 'FLT_NO', 'FLT_SEGMENT', 'FLT_ROUTE', 'HXJG_FLAG', 'DEP_HOUR',
     'DEP_MINUTE', 'CAP', 'DISCAP', 'BKD', 'PRICE_OTA', 'PRICE',
-    'PJPJ_FINAL', 'SRS_SALES', 'PJPJ_SALES', 
-    'BKD_PLF_EST', 'SRS_ZL_LEFT', 'T_FLAG', 'AI_ADVICE_PRICE','CREATE_TIME',
+    'PJPJ_FINAL', 'SRS_SALES', 'PJPJ_SALES', 'PRICE_INCREASE',
+    'BKD_PLF_EST', 'SRS_ZL_LEFT', 'T_FLAG', 'ADVICE_PRICE'
 ]
 
 
@@ -48,7 +49,7 @@ class SoloFltAdvicePrice(object):
         self.config = config
         self.data = data
 
-        logging.info("【SoloFltAdvicePrice】%s 程序开始！", self.config.version_number)
+        logging.info("【SoloFltAdvicePrice】程序开始！")
         self.compute_advice_price()
 
     # ----------------------------------------------------------
@@ -86,7 +87,7 @@ class SoloFltAdvicePrice(object):
     # ----------------------------------------------------------
 
     def _price_decision_making_chain(self):
-        """计算 AI_ADVICE_PRICE。
+        """计算 ADVICE_PRICE。
 
         4 条策略分支，优先级从高到低：
           1. PRICE_INCREASE > 0  → 保留突增价格 (ADVICE_PRICE)
@@ -107,7 +108,7 @@ class SoloFltAdvicePrice(object):
             self._price_tflag_positive(df),
             self._price_tflag_negative(df),
         ]
-        df['AI_ADVICE_PRICE'] = np.select(conds, choices, default=df['ADVICE_PRICE'])
+        df['ADVICE_PRICE'] = np.select(conds, choices, default=df['ADVICE_PRICE'])
         self.result_data = df
 
     def _price_tflag_positive(self, df):
@@ -162,8 +163,11 @@ class SoloFltAdvicePrice(object):
 
     def _persist_result(self):
         """选择输出列并持久化到数据库。"""
-        tmp_data = self.result_data[OUTPUT_COLS]
-        insert_data("SOLO_FLIGHT_ADVICE_DATA_COPY", tmp_data)
+        tmp_data = self.result_data[OUTPUT_COLS].copy()
+        tmp_data['ADVICE_PRICE'] = round_to_10(tmp_data['ADVICE_PRICE'])
+        tmp_data.loc[:, 'CREATE_TIME'] = self.config.create_time
+        insert_data("SOLO_FLT_ADVICE_DATA_COPY", tmp_data)
+        self.result_data = tmp_data
 
 
 

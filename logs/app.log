@@ -66,3 +66,1019 @@ Traceback (most recent call last):
   File "d:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\pandas\core\generic.py", line 1850, in _get_label_or_level_values
     raise KeyError(key)
 KeyError: 'CARRIER'
+2026-06-22 12:46:02,918 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 12:46:06,022 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 12:46:06,023 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 12:46:06,575 KNNBasePredictor.py[line:321] INFO 【SoloFlightNumberIncreaseKNN】4进程模式，maxtasksperchild=10，数据量：146
+2026-06-22 12:47:49,002 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 138 行
+2026-06-22 12:47:49,711 basic_helper_fuction.py[line:68] ERROR ORA-00904: "AIR_CODE": 标识符无效
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 86, in _process_flight_type
+    result_data = predict_func(args)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloPartFlightAdvicePriceLine.py", line 23, in solo_part_flight_advice_price
+    data = bkd_sharp_rise(args, data)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloBkdSharpRise.py", line 145, in bkd_sharp_rise
+    prev_prices = _fetch_previous_ota_prices()
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloBkdSharpRise.py", line 31, in _fetch_previous_ota_prices
+    return get_data(
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 479, in get_data
+    col_names = db.queryTitle(sql)
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 355, in queryTitle
+    self.cursor.execute(sql)
+cx_Oracle.DatabaseError: ORA-00904: "AIR_CODE": 标识符无效
+2026-06-22 12:48:11,211 send_mail.py[line:69] ERROR 邮件发送失败 | Subject=【动态定价程序报错】 | Recipients=['sujichao_123@163.com'] | Error=[WinError 10061] 由于目标计算机积极拒绝，无法连接。
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 86, in _process_flight_type
+    result_data = predict_func(args)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloPartFlightAdvicePriceLine.py", line 23, in solo_part_flight_advice_price
+    data = bkd_sharp_rise(args, data)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloBkdSharpRise.py", line 145, in bkd_sharp_rise
+    prev_prices = _fetch_previous_ota_prices()
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloBkdSharpRise.py", line 31, in _fetch_previous_ota_prices
+    return get_data(
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 479, in get_data
+    col_names = db.queryTitle(sql)
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 355, in queryTitle
+    self.cursor.execute(sql)
+cx_Oracle.DatabaseError: ORA-00904: "AIR_CODE": 标识符无效
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\common\send_mail.py", line 64, in send_mail
+    server.send_mail(recipients, mail)
+  File "d:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\zmail\server.py", line 115, in send_mail
+    with self.smtp_server as server:
+  File "d:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\zmail\abc.py", line 78, in __enter__
+    self.login()
+  File "d:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\zmail\server.py", line 235, in login
+    self._make_server()
+  File "d:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\zmail\server.py", line 220, in _make_server
+    self.server = smtplib.SMTP_SSL(self.host, self.port, __local__, timeout=self.timeout)
+  File "C:\Users\s_jc\AppData\Local\Programs\Python\Python310\lib\smtplib.py", line 1050, in __init__
+    SMTP.__init__(self, host, port, local_hostname, timeout,
+  File "C:\Users\s_jc\AppData\Local\Programs\Python\Python310\lib\smtplib.py", line 255, in __init__
+    (code, msg) = self.connect(host, port)
+  File "C:\Users\s_jc\AppData\Local\Programs\Python\Python310\lib\smtplib.py", line 341, in connect
+    self.sock = self._get_socket(host, port, self.timeout)
+  File "C:\Users\s_jc\AppData\Local\Programs\Python\Python310\lib\smtplib.py", line 1056, in _get_socket
+    new_socket = super()._get_socket(host, port, timeout)
+  File "C:\Users\s_jc\AppData\Local\Programs\Python\Python310\lib\smtplib.py", line 312, in _get_socket
+    return socket.create_connection((host, port), timeout,
+  File "C:\Users\s_jc\AppData\Local\Programs\Python\Python310\lib\socket.py", line 845, in create_connection
+    raise err
+  File "C:\Users\s_jc\AppData\Local\Programs\Python\Python310\lib\socket.py", line 833, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+2026-06-22 14:18:52,066 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 14:18:52,364 basic_helper_fuction.py[line:88] ERROR ORA-00904: "WBD_ID": invalid identifier
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 87, in _process_flight_type
+    data_storage(args, flt_type, result_data)
+  File "D:\CodeStarge\DynamicPricingLab\common\data_storage.py", line 49, in data_storage
+    insert_data("MAX_RETURN_ADVICE_PRICE_COPY", flt_price_advice_result)
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 538, in insert_data
+    db.insertBatch(sql, tuples)
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 426, in insertBatch
+    self.cursor.executemany(None, nameParams)
+cx_Oracle.DatabaseError: ORA-00904: "WBD_ID": invalid identifier
+2026-06-22 14:19:49,956 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 14:19:50,339 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 14:19:50,340 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 14:19:50,354 basic_helper_fuction.py[line:88] ERROR name 'MP_MAX_TASKS_PER_CHILD' is not defined
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 86, in _process_flight_type
+    result_data = predict_func(args)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloPartFlightAdvicePriceLine.py", line 21, in solo_part_flight_advice_price
+    data = solo_knn_est_run(args)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloBkdPredictKNN.py", line 121, in solo_knn_est_run
+    show_data = model.run()
+  File "D:\CodeStarge\DynamicPricingLab\model\KNNBasePredictor.py", line 323, in run
+    f"maxtasksperchild={MP_MAX_TASKS_PER_CHILD}，"
+NameError: name 'MP_MAX_TASKS_PER_CHILD' is not defined
+2026-06-22 14:20:10,502 send_mail.py[line:65] INFO 邮件发送成功 | Subject=【动态定价程序报错】 | Recipients=['sujichao_123@163.com']
+2026-06-22 14:20:10,512 run.py[line:108] WARNING 航班动态定价托管程序执行失败！
+2026-06-22 14:20:11,048 DataTemporaryProcessing.py[line:20] INFO 生产环境接口：<Response [200]>
+2026-06-22 14:21:33,092 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 14:21:33,094 basic_helper_fuction.py[line:58] INFO 检测到调试器已附加，自动禁用多进程模式
+2026-06-22 14:21:33,095 run.py[line:96] INFO 多进程已禁用，程序将以单进程模式运行
+2026-06-22 14:21:58,825 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 14:21:58,826 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 14:21:58,840 KNNBasePredictor.py[line:313] INFO 【SoloFlightNumberIncreaseKNN】多进程已被环境变量禁用，使用单进程模式，数据量：146
+2026-06-22 14:21:58,841 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：146
+2026-06-22 14:22:03,769 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 14:22:04,671 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-解除1级(DECODE映射DOW)] 样本不足(0条)，回退到 3天假-解除2级(全面放宽)
+2026-06-22 14:22:18,384 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 14:22:19,240 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-解除1级(DECODE映射DOW)] 样本不足(0条)，回退到 3天假-解除2级(全面放宽)
+2026-06-22 14:22:32,131 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 14:22:32,989 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-解除1级(DECODE映射DOW)] 样本不足(0条)，回退到 3天假-解除2级(全面放宽)
+2026-06-22 14:22:47,063 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 14:22:47,924 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-解除1级(DECODE映射DOW)] 样本不足(0条)，回退到 3天假-解除2级(全面放宽)
+2026-06-22 14:23:03,144 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 14:23:03,477 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 14:23:03,478 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 14:23:03,489 basic_helper_fuction.py[line:88] ERROR name 'MP_MAX_TASKS_PER_CHILD' is not defined
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 86, in _process_flight_type
+    result_data = predict_func(args)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloPartFlightAdvicePriceLine.py", line 21, in solo_part_flight_advice_price
+    data = solo_knn_est_run(args)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloBkdPredictKNN.py", line 121, in solo_knn_est_run
+    show_data = model.run()
+  File "D:\CodeStarge\DynamicPricingLab\model\KNNBasePredictor.py", line 323, in run
+    f"maxtasksperchild={MP_MAX_TASKS_PER_CHILD}，"
+NameError: name 'MP_MAX_TASKS_PER_CHILD' is not defined
+2026-06-22 14:23:23,802 send_mail.py[line:65] INFO 邮件发送成功 | Subject=【动态定价程序报错】 | Recipients=['sujichao_123@163.com']
+2026-06-22 14:23:23,809 run.py[line:108] WARNING 航班动态定价托管程序执行失败！
+2026-06-22 14:23:24,059 DataTemporaryProcessing.py[line:20] INFO 生产环境接口：<Response [200]>
+2026-06-22 14:25:06,472 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 14:25:06,696 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 14:25:06,696 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 14:25:06,707 KNNBasePredictor.py[line:321] INFO 【SoloFlightNumberIncreaseKNN】8进程模式，maxtasksperchild=10，数据量：146
+2026-06-22 14:25:30,058 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 138 行
+2026-06-22 14:25:30,084 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 14:25:30,092 basic_helper_fuction.py[line:88] ERROR ORA-00904: "AIR_CODE": invalid identifier
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 86, in _process_flight_type
+    result_data = predict_func(args)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloPartFlightAdvicePriceLine.py", line 23, in solo_part_flight_advice_price
+    data = bkd_sharp_rise(args, data)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloBkdSharpRise.py", line 160, in bkd_sharp_rise
+    df = _load_previous_surge_and_floor(df)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloBkdSharpRise.py", line 111, in _load_previous_surge_and_floor
+    surge_history = get_data(
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 479, in get_data
+    col_names = db.queryTitle(sql)
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 355, in queryTitle
+    self.cursor.execute(sql)
+cx_Oracle.DatabaseError: ORA-00904: "AIR_CODE": invalid identifier
+2026-06-22 14:27:55,159 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 14:27:55,366 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 14:27:55,367 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 14:27:55,377 KNNBasePredictor.py[line:321] INFO 【SoloFlightNumberIncreaseKNN】8进程模式，maxtasksperchild=10，数据量：146
+2026-06-22 14:28:15,697 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 138 行
+2026-06-22 14:28:15,720 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 14:28:15,736 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 138 行
+2026-06-22 14:28:15,736 SoloAdvicePrice.py[line:51] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 14:28:15,744 basic_helper_fuction.py[line:88] ERROR ORA-00904: "AIR_CODE": invalid identifier
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 86, in _process_flight_type
+    result_data = predict_func(args)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloPartFlightAdvicePriceLine.py", line 25, in solo_part_flight_advice_price
+    data = SoloFltAdvicePrice(args, data)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 52, in __init__
+    self.compute_advice_price()
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 60, in compute_advice_price
+    self._prepare_data()
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 74, in _prepare_data
+    hist_sales = get_data(
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 479, in get_data
+    col_names = db.queryTitle(sql)
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 355, in queryTitle
+    self.cursor.execute(sql)
+cx_Oracle.DatabaseError: ORA-00904: "AIR_CODE": invalid identifier
+2026-06-22 14:28:35,852 send_mail.py[line:65] INFO 邮件发送成功 | Subject=【动态定价程序报错】 | Recipients=['sujichao_123@163.com']
+2026-06-22 14:28:35,864 run.py[line:108] WARNING 航班动态定价托管程序执行失败！
+2026-06-22 14:28:36,119 DataTemporaryProcessing.py[line:20] INFO 生产环境接口：<Response [200]>
+2026-06-22 14:32:18,145 DataTemporaryProcessing.py[line:49] WARNING 程序临时执行，删除由此产生的重复数据！
+2026-06-22 14:40:35,667 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 14:40:35,861 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 14:40:35,862 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 14:40:35,872 KNNBasePredictor.py[line:321] INFO 【SoloFlightNumberIncreaseKNN】8进程模式，maxtasksperchild=10，数据量：154
+2026-06-22 14:40:43,136 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 14:40:43,169 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 14:40:43,210 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 14:40:43,211 SoloAdvicePrice.py[line:51] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 14:40:43,233 basic_helper_fuction.py[line:88] ERROR "['CATCH_TIME', 'ROUTE', 'CREATE_TIME'] not in index"
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 86, in _process_flight_type
+    result_data = predict_func(args)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloPartFlightAdvicePriceLine.py", line 25, in solo_part_flight_advice_price
+    data = SoloFltAdvicePrice(args, data)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 52, in __init__
+    self.compute_advice_price()
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 62, in compute_advice_price
+    self._persist_result()
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 165, in _persist_result
+    tmp_data = self.result_data[OUTPUT_COLS]
+  File "D:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\pandas\core\frame.py", line 3813, in __getitem__
+    indexer = self.columns._get_indexer_strict(key, "columns")[1]
+  File "D:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\pandas\core\indexes\base.py", line 6070, in _get_indexer_strict
+    self._raise_if_missing(keyarr, indexer, axis_name)
+  File "D:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\pandas\core\indexes\base.py", line 6133, in _raise_if_missing
+    raise KeyError(f"{not_found} not in index")
+KeyError: "['CATCH_TIME', 'ROUTE', 'CREATE_TIME'] not in index"
+2026-06-22 14:41:04,408 send_mail.py[line:65] INFO 邮件发送成功 | Subject=【动态定价程序报错】 | Recipients=['sujichao_123@163.com']
+2026-06-22 14:41:04,416 run.py[line:108] WARNING 航班动态定价托管程序执行失败！
+2026-06-22 14:41:04,694 DataTemporaryProcessing.py[line:20] INFO 生产环境接口：<Response [200]>
+2026-06-22 14:44:26,697 DataTemporaryProcessing.py[line:49] WARNING 程序临时执行，删除由此产生的重复数据！
+2026-06-22 14:46:06,923 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 14:46:07,104 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 14:46:07,105 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 14:46:07,115 KNNBasePredictor.py[line:321] INFO 【SoloFlightNumberIncreaseKNN】8进程模式，maxtasksperchild=10，数据量：154
+2026-06-22 14:46:14,077 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 14:46:14,101 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 14:46:14,125 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 14:46:14,125 SoloAdvicePrice.py[line:51] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 14:46:14,147 basic_helper_fuction.py[line:88] ERROR "['CATCH_TIME', 'ROUTE', 'CREATE_TIME'] not in index"
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 86, in _process_flight_type
+    result_data = predict_func(args)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloPartFlightAdvicePriceLine.py", line 25, in solo_part_flight_advice_price
+    data = SoloFltAdvicePrice(args, data)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 52, in __init__
+    self.compute_advice_price()
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 62, in compute_advice_price
+    self._persist_result()
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 165, in _persist_result
+    tmp_data = self.result_data[OUTPUT_COLS]
+  File "D:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\pandas\core\frame.py", line 3813, in __getitem__
+    indexer = self.columns._get_indexer_strict(key, "columns")[1]
+  File "D:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\pandas\core\indexes\base.py", line 6070, in _get_indexer_strict
+    self._raise_if_missing(keyarr, indexer, axis_name)
+  File "D:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\pandas\core\indexes\base.py", line 6133, in _raise_if_missing
+    raise KeyError(f"{not_found} not in index")
+KeyError: "['CATCH_TIME', 'ROUTE', 'CREATE_TIME'] not in index"
+2026-06-22 14:46:34,262 send_mail.py[line:65] INFO 邮件发送成功 | Subject=【动态定价程序报错】 | Recipients=['sujichao_123@163.com']
+2026-06-22 14:46:34,269 run.py[line:108] WARNING 航班动态定价托管程序执行失败！
+2026-06-22 14:46:34,735 DataTemporaryProcessing.py[line:20] INFO 生产环境接口：<Response [200]>
+2026-06-22 14:47:16,490 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 14:47:16,491 basic_helper_fuction.py[line:58] INFO 检测到调试器已附加，自动禁用多进程模式
+2026-06-22 14:47:16,492 run.py[line:96] INFO 多进程已禁用，程序将以单进程模式运行
+2026-06-22 14:47:16,694 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 14:47:16,695 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 14:47:16,707 KNNBasePredictor.py[line:313] INFO 【SoloFlightNumberIncreaseKNN】多进程已被环境变量禁用，使用单进程模式，数据量：154
+2026-06-22 14:47:16,708 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：154
+2026-06-22 14:47:17,427 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 14:47:22,247 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 14:47:25,258 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 14:47:30,946 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 14:47:33,995 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 14:47:39,960 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 14:47:42,661 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 14:47:44,365 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 14:47:47,191 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 14:47:48,470 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 14:47:48,514 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 14:47:48,546 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 14:47:48,547 SoloAdvicePrice.py[line:51] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 14:56:18,960 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 14:56:18,960 basic_helper_fuction.py[line:58] INFO 检测到调试器已附加，自动禁用多进程模式
+2026-06-22 14:56:18,961 run.py[line:96] INFO 多进程已禁用，程序将以单进程模式运行
+2026-06-22 14:56:19,163 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 14:56:19,163 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 14:56:19,176 KNNBasePredictor.py[line:313] INFO 【SoloFlightNumberIncreaseKNN】多进程已被环境变量禁用，使用单进程模式，数据量：154
+2026-06-22 14:56:19,177 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：154
+2026-06-22 14:56:19,876 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 14:56:24,515 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 14:56:27,453 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 14:56:33,247 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 14:56:36,406 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 14:56:42,457 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 14:56:45,503 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 14:56:47,218 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 14:56:49,889 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 14:56:51,093 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 14:56:51,131 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 14:56:51,164 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 14:56:51,165 SoloAdvicePrice.py[line:51] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 15:00:16,072 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:00:16,260 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 15:00:16,261 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:00:16,271 KNNBasePredictor.py[line:321] INFO 【SoloFlightNumberIncreaseKNN】8进程模式，maxtasksperchild=10，数据量：154
+2026-06-22 15:00:23,221 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 15:00:23,245 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 15:00:23,265 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 15:00:23,266 SoloAdvicePrice.py[line:51] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 15:00:23,289 basic_helper_fuction.py[line:88] ERROR "['CREATE_TIME'] not in index"
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 86, in _process_flight_type
+    result_data = predict_func(args)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloPartFlightAdvicePriceLine.py", line 25, in solo_part_flight_advice_price
+    data = SoloFltAdvicePrice(args, data)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 52, in __init__
+    self.compute_advice_price()
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 62, in compute_advice_price
+    self._persist_result()
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 165, in _persist_result
+    tmp_data = self.result_data[OUTPUT_COLS].copy()
+  File "D:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\pandas\core\frame.py", line 3813, in __getitem__
+    indexer = self.columns._get_indexer_strict(key, "columns")[1]
+  File "D:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\pandas\core\indexes\base.py", line 6070, in _get_indexer_strict
+    self._raise_if_missing(keyarr, indexer, axis_name)
+  File "D:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\pandas\core\indexes\base.py", line 6133, in _raise_if_missing
+    raise KeyError(f"{not_found} not in index")
+KeyError: "['CREATE_TIME'] not in index"
+2026-06-22 15:00:48,135 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:00:48,357 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 15:00:48,358 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:00:48,369 KNNBasePredictor.py[line:321] INFO 【SoloFlightNumberIncreaseKNN】8进程模式，maxtasksperchild=10，数据量：154
+2026-06-22 15:00:55,751 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 15:00:55,772 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 15:00:55,792 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 15:00:55,792 SoloAdvicePrice.py[line:51] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 15:00:55,825 basic_helper_fuction.py[line:88] ERROR ORA-00904: "ADVICE_PRICE": invalid identifier
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 86, in _process_flight_type
+    result_data = predict_func(args)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloPartFlightAdvicePriceLine.py", line 25, in solo_part_flight_advice_price
+    data = SoloFltAdvicePrice(args, data)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 52, in __init__
+    self.compute_advice_price()
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 62, in compute_advice_price
+    self._persist_result()
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 167, in _persist_result
+    insert_data("SOLO_FLT_ADVICE_DATA_COPY", tmp_data)
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 538, in insert_data
+    db.insertBatch(sql, tuples)
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 426, in insertBatch
+    self.cursor.executemany(None, nameParams)
+cx_Oracle.DatabaseError: ORA-00904: "ADVICE_PRICE": invalid identifier
+2026-06-22 15:01:54,186 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:01:54,187 basic_helper_fuction.py[line:58] INFO 检测到调试器已附加，自动禁用多进程模式
+2026-06-22 15:01:54,187 run.py[line:96] INFO 多进程已禁用，程序将以单进程模式运行
+2026-06-22 15:01:54,432 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 15:01:54,432 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:01:54,447 KNNBasePredictor.py[line:313] INFO 【SoloFlightNumberIncreaseKNN】多进程已被环境变量禁用，使用单进程模式，数据量：154
+2026-06-22 15:01:54,448 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：154
+2026-06-22 15:01:55,212 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 15:02:00,066 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:02:03,049 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:02:09,130 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:02:12,307 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:02:18,765 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:02:21,590 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:02:23,288 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:02:26,089 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:02:27,314 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 15:02:27,344 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 15:02:27,371 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 15:02:27,371 SoloAdvicePrice.py[line:51] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 15:04:49,606 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:04:49,854 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 15:04:49,855 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:04:49,865 KNNBasePredictor.py[line:321] INFO 【SoloFlightNumberIncreaseKNN】8进程模式，maxtasksperchild=10，数据量：154
+2026-06-22 15:04:57,113 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 15:04:57,141 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 15:04:57,162 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 15:04:57,162 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 15:04:57,198 basic_helper_fuction.py[line:88] ERROR ORA-00904: "ADVICE_PRICE": invalid identifier
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 86, in _process_flight_type
+    result_data = predict_func(args)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloPartFlightAdvicePriceLine.py", line 25, in solo_part_flight_advice_price
+    data = SoloFltAdvicePrice(args, data)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 53, in __init__
+    self.compute_advice_price()
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 63, in compute_advice_price
+    self._persist_result()
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 169, in _persist_result
+    insert_data("SOLO_FLT_ADVICE_DATA_COPY", tmp_data)
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 538, in insert_data
+    db.insertBatch(sql, tuples)
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 426, in insertBatch
+    self.cursor.executemany(None, nameParams)
+cx_Oracle.DatabaseError: ORA-00904: "ADVICE_PRICE": invalid identifier
+2026-06-22 15:05:17,405 send_mail.py[line:65] INFO 邮件发送成功 | Subject=【动态定价程序报错】 | Recipients=['sujichao_123@163.com']
+2026-06-22 15:05:17,412 run.py[line:108] WARNING 航班动态定价托管程序执行失败！
+2026-06-22 15:05:17,634 DataTemporaryProcessing.py[line:20] INFO 生产环境接口：<Response [200]>
+2026-06-22 15:05:41,689 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:05:41,925 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 15:05:41,926 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:05:41,938 KNNBasePredictor.py[line:321] INFO 【SoloFlightNumberIncreaseKNN】8进程模式，maxtasksperchild=10，数据量：154
+2026-06-22 15:05:49,258 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 15:05:49,281 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 15:05:49,298 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 15:05:49,299 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 15:05:49,340 basic_helper_fuction.py[line:88] ERROR 'SoloFltAdvicePrice' object has no attribute 'copy'
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 86, in _process_flight_type
+    result_data = predict_func(args)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloPartFlightAdvicePriceLine.py", line 27, in solo_part_flight_advice_price
+    rule_post_processing(args, data)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloRulePostProcessing.py", line 132, in rule_post_processing
+    df = data.copy()
+AttributeError: 'SoloFltAdvicePrice' object has no attribute 'copy'
+2026-06-22 15:06:09,562 send_mail.py[line:65] INFO 邮件发送成功 | Subject=【动态定价程序报错】 | Recipients=['sujichao_123@163.com']
+2026-06-22 15:06:09,577 run.py[line:108] WARNING 航班动态定价托管程序执行失败！
+2026-06-22 15:06:09,808 DataTemporaryProcessing.py[line:20] INFO 生产环境接口：<Response [200]>
+2026-06-22 15:10:58,241 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:10:58,242 basic_helper_fuction.py[line:58] INFO 检测到调试器已附加，自动禁用多进程模式
+2026-06-22 15:10:58,242 run.py[line:96] INFO 多进程已禁用，程序将以单进程模式运行
+2026-06-22 15:10:58,477 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 15:10:58,478 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:10:58,495 KNNBasePredictor.py[line:313] INFO 【SoloFlightNumberIncreaseKNN】多进程已被环境变量禁用，使用单进程模式，数据量：154
+2026-06-22 15:10:58,496 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：154
+2026-06-22 15:10:59,264 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 15:11:04,004 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:11:07,030 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:11:13,033 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:11:16,370 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:11:22,639 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:11:25,477 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:11:27,315 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:11:30,154 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:11:31,441 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 15:11:31,479 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 15:11:31,509 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 15:11:31,510 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 15:12:18,232 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:12:18,233 basic_helper_fuction.py[line:58] INFO 检测到调试器已附加，自动禁用多进程模式
+2026-06-22 15:12:18,234 run.py[line:96] INFO 多进程已禁用，程序将以单进程模式运行
+2026-06-22 15:12:18,482 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 15:12:18,483 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:12:18,505 KNNBasePredictor.py[line:313] INFO 【SoloFlightNumberIncreaseKNN】多进程已被环境变量禁用，使用单进程模式，数据量：154
+2026-06-22 15:12:18,506 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：154
+2026-06-22 15:12:19,335 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 15:12:24,196 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:12:27,308 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:12:33,437 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:12:36,596 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:12:42,945 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:12:45,794 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:12:47,538 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:12:50,461 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:12:51,784 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 15:12:51,821 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 15:12:51,855 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 15:13:12,733 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 15:14:26,387 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:14:26,388 basic_helper_fuction.py[line:58] INFO 检测到调试器已附加，自动禁用多进程模式
+2026-06-22 15:14:26,389 run.py[line:96] INFO 多进程已禁用，程序将以单进程模式运行
+2026-06-22 15:14:26,616 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 15:14:26,617 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:14:26,636 KNNBasePredictor.py[line:313] INFO 【SoloFlightNumberIncreaseKNN】多进程已被环境变量禁用，使用单进程模式，数据量：154
+2026-06-22 15:14:26,637 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：154
+2026-06-22 15:14:27,368 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 15:14:32,211 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:14:35,286 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:14:41,256 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:14:44,557 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:14:51,045 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:14:53,895 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:14:55,649 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:14:58,487 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:14:59,716 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 15:14:59,749 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 15:14:59,780 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 15:14:59,781 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 15:15:21,203 basic_helper_fuction.py[line:88] ERROR 'ROUTE'
+Traceback (most recent call last):
+  File "D:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\pandas\core\indexes\base.py", line 3802, in get_loc
+    return self._engine.get_loc(casted_key)
+  File "pandas\_libs\index.pyx", line 138, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas\_libs\index.pyx", line 165, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas\_libs\hashtable_class_helper.pxi", line 5745, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas\_libs\hashtable_class_helper.pxi", line 5753, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'ROUTE'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 86, in _process_flight_type
+    result_data = predict_func(args)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloPartFlightAdvicePriceLine.py", line 27, in solo_part_flight_advice_price
+    rule_post_processing(args, data.result_data)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloRulePostProcessing.py", line 133, in rule_post_processing
+    df = _apply_ns_baggage_rule(df)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloRulePostProcessing.py", line 32, in _apply_ns_baggage_rule
+    & ~(df['ROUTE'].str.contains('PKX'))
+  File "D:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\pandas\core\frame.py", line 3807, in __getitem__
+    indexer = self.columns.get_loc(key)
+  File "D:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\pandas\core\indexes\base.py", line 3804, in get_loc
+    raise KeyError(key) from err
+KeyError: 'ROUTE'
+2026-06-22 15:18:39,970 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:18:39,971 basic_helper_fuction.py[line:58] INFO 检测到调试器已附加，自动禁用多进程模式
+2026-06-22 15:18:39,972 run.py[line:96] INFO 多进程已禁用，程序将以单进程模式运行
+2026-06-22 15:18:40,242 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 15:18:40,242 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:18:40,260 KNNBasePredictor.py[line:313] INFO 【SoloFlightNumberIncreaseKNN】多进程已被环境变量禁用，使用单进程模式，数据量：154
+2026-06-22 15:18:40,261 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：154
+2026-06-22 15:18:41,024 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 15:18:46,054 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:18:49,256 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:18:55,597 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:18:58,946 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:19:05,764 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:19:08,827 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:19:10,748 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:19:13,904 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:19:15,665 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 15:19:15,699 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 15:19:15,731 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 15:19:15,732 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 15:24:48,576 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:24:48,577 basic_helper_fuction.py[line:58] INFO 检测到调试器已附加，自动禁用多进程模式
+2026-06-22 15:24:48,577 run.py[line:96] INFO 多进程已禁用，程序将以单进程模式运行
+2026-06-22 15:24:48,864 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 15:24:48,864 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:24:48,886 KNNBasePredictor.py[line:313] INFO 【SoloFlightNumberIncreaseKNN】多进程已被环境变量禁用，使用单进程模式，数据量：154
+2026-06-22 15:24:48,888 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：154
+2026-06-22 15:24:49,644 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 15:24:54,591 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:24:57,574 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:25:03,402 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:25:06,572 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:25:12,866 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:25:15,834 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:25:17,763 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:25:20,623 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:25:21,904 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 15:25:21,936 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 15:25:21,967 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 15:25:21,968 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 15:25:22,022 basic_helper_fuction.py[line:88] ERROR ORA-00900: invalid SQL statement
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 86, in _process_flight_type
+    result_data = predict_func(args)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloPartFlightAdvicePriceLine.py", line 27, in solo_part_flight_advice_price
+    rule_post_processing(args, data.result_data)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloRulePostProcessing.py", line 134, in rule_post_processing
+    df = _apply_route_floor_price(df)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloRulePostProcessing.py", line 53, in _apply_route_floor_price
+    df = pd.merge(df, get_data(FLIGHT_PRICE_BOTTOM_SQL),
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 479, in get_data
+    col_names = db.queryTitle(sql)
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 355, in queryTitle
+    self.cursor.execute(sql)
+cx_Oracle.DatabaseError: ORA-00900: invalid SQL statement
+2026-06-22 15:25:43,112 send_mail.py[line:65] INFO 邮件发送成功 | Subject=【动态定价程序报错】 | Recipients=['sujichao_123@163.com']
+2026-06-22 15:25:43,120 run.py[line:108] WARNING 航班动态定价托管程序执行失败！
+2026-06-22 15:25:43,358 DataTemporaryProcessing.py[line:20] INFO 生产环境接口：<Response [200]>
+2026-06-22 15:27:40,897 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:27:40,897 basic_helper_fuction.py[line:58] INFO 检测到调试器已附加，自动禁用多进程模式
+2026-06-22 15:27:40,898 run.py[line:96] INFO 多进程已禁用，程序将以单进程模式运行
+2026-06-22 15:27:41,146 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 15:27:41,147 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:27:41,161 KNNBasePredictor.py[line:313] INFO 【SoloFlightNumberIncreaseKNN】多进程已被环境变量禁用，使用单进程模式，数据量：154
+2026-06-22 15:27:41,162 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：154
+2026-06-22 15:27:41,903 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 15:27:46,692 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:27:49,643 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:27:55,303 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:27:58,392 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:28:04,381 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:28:07,289 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:28:09,024 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:28:11,779 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:28:12,986 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 15:28:13,023 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 15:28:13,057 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 15:28:13,058 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 15:30:41,479 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:30:41,679 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 15:30:41,680 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:30:41,691 KNNBasePredictor.py[line:321] INFO 【SoloFlightNumberIncreaseKNN】8进程模式，maxtasksperchild=10，数据量：154
+2026-06-22 15:30:48,741 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 15:30:48,763 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 15:30:48,783 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 15:30:48,784 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 15:30:48,850 basic_helper_fuction.py[line:88] ERROR 'SoloFltAdvicePrice' object is not subscriptable
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 87, in _process_flight_type
+    data_storage(args, flt_type, result_data)
+  File "D:\CodeStarge\DynamicPricingLab\common\data_storage.py", line 91, in data_storage
+    solo_flt_advice_price_result = result_data['solo_flt_advice_price_result']
+TypeError: 'SoloFltAdvicePrice' object is not subscriptable
+2026-06-22 15:33:50,098 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:33:50,099 basic_helper_fuction.py[line:58] INFO 检测到调试器已附加，自动禁用多进程模式
+2026-06-22 15:33:50,099 run.py[line:96] INFO 多进程已禁用，程序将以单进程模式运行
+2026-06-22 15:33:50,334 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 15:33:50,335 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:33:50,353 KNNBasePredictor.py[line:313] INFO 【SoloFlightNumberIncreaseKNN】多进程已被环境变量禁用，使用单进程模式，数据量：154
+2026-06-22 15:33:50,354 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：154
+2026-06-22 15:33:51,084 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 15:33:55,724 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:33:58,614 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:34:04,611 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:34:07,828 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:34:13,964 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:34:16,768 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:34:18,496 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:34:21,286 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:34:22,542 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 15:34:22,573 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 15:34:22,601 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 15:34:22,601 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 15:42:27,500 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:42:27,501 basic_helper_fuction.py[line:58] INFO 检测到调试器已附加，自动禁用多进程模式
+2026-06-22 15:42:27,501 run.py[line:96] INFO 多进程已禁用，程序将以单进程模式运行
+2026-06-22 15:42:27,727 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 15:42:27,728 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:42:27,741 KNNBasePredictor.py[line:313] INFO 【SoloFlightNumberIncreaseKNN】多进程已被环境变量禁用，使用单进程模式，数据量：154
+2026-06-22 15:42:27,742 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：154
+2026-06-22 15:42:28,476 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 15:42:33,154 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:42:36,093 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:42:41,803 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:42:44,990 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:42:51,268 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:42:54,023 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:42:55,742 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:42:58,572 DataFetchRules.py[line:222] INFO 【DataFetchRules】[普通日-精确匹配] 样本不足(0条)，回退到 普通日-解除1级(去除DOW、HXJG_FLAG和是否暑运的限制)
+2026-06-22 15:42:59,780 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 15:42:59,817 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 15:42:59,849 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 15:42:59,850 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 15:45:32,171 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:45:32,403 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 15:45:32,403 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:45:32,415 KNNBasePredictor.py[line:321] INFO 【SoloFlightNumberIncreaseKNN】8进程模式，maxtasksperchild=10，数据量：154
+2026-06-22 15:45:39,323 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 15:45:39,343 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 15:45:39,360 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 15:45:39,360 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 15:45:39,412 basic_helper_fuction.py[line:88] ERROR 'SoloFltAdvicePrice' object is not subscriptable
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 87, in _process_flight_type
+    data_storage(args, flt_type, result_data)
+  File "D:\CodeStarge\DynamicPricingLab\common\data_storage.py", line 91, in data_storage
+    solo_flt_advice_price_result = result_data['solo_flt_advice_price_result']
+TypeError: 'SoloFltAdvicePrice' object is not subscriptable
+2026-06-22 15:46:00,720 send_mail.py[line:65] INFO 邮件发送成功 | Subject=【动态定价程序报错】 | Recipients=['sujichao_123@163.com']
+2026-06-22 15:46:00,730 run.py[line:108] WARNING 航班动态定价托管程序执行失败！
+2026-06-22 15:46:00,950 DataTemporaryProcessing.py[line:20] INFO 生产环境接口：<Response [200]>
+2026-06-22 15:47:05,314 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:47:05,519 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 15:47:05,519 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:47:05,528 KNNBasePredictor.py[line:321] INFO 【SoloFlightNumberIncreaseKNN】8进程模式，maxtasksperchild=10，数据量：154
+2026-06-22 15:47:12,560 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 15:47:12,579 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 15:47:12,595 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 15:47:12,595 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 15:47:12,643 basic_helper_fuction.py[line:88] ERROR 'SoloFltAdvicePrice' object is not subscriptable
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 87, in _process_flight_type
+    data_storage(args, flt_type, result_data)
+  File "D:\CodeStarge\DynamicPricingLab\common\data_storage.py", line 91, in data_storage
+    solo_flt_advice_price_result = result_data['solo_flt_advice_price_result']
+TypeError: 'SoloFltAdvicePrice' object is not subscriptable
+2026-06-22 15:47:32,765 send_mail.py[line:65] INFO 邮件发送成功 | Subject=【动态定价程序报错】 | Recipients=['sujichao_123@163.com']
+2026-06-22 15:47:32,772 run.py[line:108] WARNING 航班动态定价托管程序执行失败！
+2026-06-22 15:48:02,233 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:48:02,450 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 15:48:02,451 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:48:02,463 KNNBasePredictor.py[line:321] INFO 【SoloFlightNumberIncreaseKNN】8进程模式，maxtasksperchild=10，数据量：154
+2026-06-22 15:48:09,264 SoloBkdSharpRise.py[line:138] INFO bkd_sharp_rise: 开始处理，输入 146 行
+2026-06-22 15:48:09,285 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 15:48:09,302 SoloBkdSharpRise.py[line:162] INFO bkd_sharp_rise: 处理完成，输出 146 行
+2026-06-22 15:48:09,303 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 15:48:09,353 run.py[line:88] INFO ===============SOLO_PART航班价格建议完成！===============
+2026-06-22 15:51:10,983 DataTemporaryProcessing.py[line:49] WARNING 程序临时执行，删除由此产生的重复数据！
+2026-06-22 15:52:20,112 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:52:20,311 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:52:20,322 KNNBasePredictor.py[line:321] INFO 【SoloFlightNumberIncreaseKNN】触发8进程模式，数据量：154
+2026-06-22 15:52:27,204 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 2 条航班触发订座突增提价
+2026-06-22 15:52:27,220 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】程序开始！
+2026-06-22 15:52:27,274 run.py[line:88] INFO ===============SOLO_PART航班价格建议完成！===============
+2026-06-22 15:55:04,296 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:56:24,828 run.py[line:151] WARNING 无效的菜单选项: -1
+2026-06-22 15:56:31,958 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:56:32,189 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:56:32,201 KNNBasePredictor.py[line:321] INFO 【SoloFlightNumberIncreaseKNN】触发8进程模式，数据量：154
+2026-06-22 15:56:40,595 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:57:01,280 database_oracle.py[line:572] INFO DP_EST_DATA_CHG进程执行完毕！
+2026-06-22 15:57:01,294 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:57:01,302 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：19
+2026-06-22 15:57:01,976 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 15:57:05,275 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 15:57:05,285 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】程序开始！
+2026-06-22 15:57:05,331 run.py[line:88] INFO ===============SOLO_PART航班价格建议完成！===============
+2026-06-22 15:58:24,078 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 15:58:24,079 basic_helper_fuction.py[line:58] INFO 检测到调试器已附加，自动禁用多进程模式
+2026-06-22 15:58:24,079 run.py[line:96] INFO 多进程已禁用，程序将以单进程模式运行
+2026-06-22 15:58:24,288 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 15:58:24,299 KNNBasePredictor.py[line:313] INFO 【SoloFlightNumberIncreaseKNN】多进程已被环境变量禁用，使用单进程模式，数据量：19
+2026-06-22 15:58:24,300 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：19
+2026-06-22 15:58:25,025 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 15:58:29,032 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 15:58:29,052 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】程序开始！
+2026-06-22 16:04:49,174 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 16:04:49,175 basic_helper_fuction.py[line:58] INFO 检测到调试器已附加，自动禁用多进程模式
+2026-06-22 16:04:49,176 run.py[line:96] INFO 多进程已禁用，程序将以单进程模式运行
+2026-06-22 16:04:49,463 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 16:04:49,476 KNNBasePredictor.py[line:313] INFO 【SoloFlightNumberIncreaseKNN】多进程已被环境变量禁用，使用单进程模式，数据量：19
+2026-06-22 16:04:49,477 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：19
+2026-06-22 16:04:50,233 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 16:04:54,237 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 16:04:54,256 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】程序开始！
+2026-06-22 16:05:03,921 basic_helper_fuction.py[line:88] ERROR data_storage() takes 2 positional arguments but 3 were given
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 87, in _process_flight_type
+    data_storage(args, flt_type, result_data)
+TypeError: data_storage() takes 2 positional arguments but 3 were given
+2026-06-22 16:05:25,522 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 16:05:25,523 basic_helper_fuction.py[line:58] INFO 检测到调试器已附加，自动禁用多进程模式
+2026-06-22 16:05:25,523 run.py[line:96] INFO 多进程已禁用，程序将以单进程模式运行
+2026-06-22 16:05:25,762 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 16:05:25,773 KNNBasePredictor.py[line:313] INFO 【SoloFlightNumberIncreaseKNN】多进程已被环境变量禁用，使用单进程模式，数据量：19
+2026-06-22 16:05:25,773 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：19
+2026-06-22 16:05:26,512 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 16:05:30,389 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 16:05:30,406 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】程序开始！
+2026-06-22 16:11:06,225 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 16:11:06,410 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 16:11:06,421 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：19
+2026-06-22 16:11:07,135 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 16:11:10,622 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 16:11:10,636 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】程序开始！
+2026-06-22 16:11:10,689 basic_helper_fuction.py[line:88] ERROR ORA-00904: "WEB_ID": invalid identifier
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 87, in _process_flight_type
+    data_storage(args, flt_type, result_data)
+  File "D:\CodeStarge\DynamicPricingLab\common\data_storage.py", line 74, in data_storage
+    insert_data("TMP_MAX_RETURN_ADVICE_PRICE", data)
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 538, in insert_data
+    db.insertBatch(sql, tuples)
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 426, in insertBatch
+    self.cursor.executemany(None, nameParams)
+cx_Oracle.DatabaseError: ORA-00904: "WEB_ID": invalid identifier
+2026-06-22 16:11:31,782 send_mail.py[line:65] INFO 邮件发送成功 | Subject=【动态定价程序报错】 | Recipients=['sujichao_123@163.com']
+2026-06-22 16:11:31,793 run.py[line:108] WARNING 航班动态定价托管程序执行失败！
+2026-06-22 16:11:32,000 DataTemporaryProcessing.py[line:19] INFO 生产环境接口：<Response [200]>
+2026-06-22 16:12:29,770 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 16:12:29,770 basic_helper_fuction.py[line:58] INFO 检测到调试器已附加，自动禁用多进程模式
+2026-06-22 16:12:29,771 run.py[line:96] INFO 多进程已禁用，程序将以单进程模式运行
+2026-06-22 16:12:29,957 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 16:12:29,967 KNNBasePredictor.py[line:313] INFO 【SoloFlightNumberIncreaseKNN】多进程已被环境变量禁用，使用单进程模式，数据量：19
+2026-06-22 16:12:29,968 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：19
+2026-06-22 16:12:30,704 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 16:12:34,735 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 16:12:34,757 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】程序开始！
+2026-06-22 16:13:50,625 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 16:13:50,830 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 16:13:50,839 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：19
+2026-06-22 16:13:51,498 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 16:13:54,806 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 16:13:54,817 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】程序开始！
+2026-06-22 16:13:54,885 run.py[line:88] INFO ===============SOLO_PART航班价格建议完成！===============
+2026-06-22 16:13:54,983 basic_helper_fuction.py[line:88] ERROR 'WBD_ID'
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 113, in run
+    advice_price_output()
+  File "D:\CodeStarge\DynamicPricingLab\common\DataTemporaryProcessing.py", line 17, in advice_price_output
+    response = advicePriceUpdate(json_flt_price_advice_result)
+  File "D:\CodeStarge\DynamicPricingLab\common\request.py", line 74, in advicePriceUpdate
+    json['reqAdvicePriceDTOList'] = [dict(zip(t2.split(), [i[k] for k in t1.split()])) for i in json['reqAdvicePriceDTOList']]
+  File "D:\CodeStarge\DynamicPricingLab\common\request.py", line 74, in <listcomp>
+    json['reqAdvicePriceDTOList'] = [dict(zip(t2.split(), [i[k] for k in t1.split()])) for i in json['reqAdvicePriceDTOList']]
+  File "D:\CodeStarge\DynamicPricingLab\common\request.py", line 74, in <listcomp>
+    json['reqAdvicePriceDTOList'] = [dict(zip(t2.split(), [i[k] for k in t1.split()])) for i in json['reqAdvicePriceDTOList']]
+KeyError: 'WBD_ID'
+2026-06-22 16:14:15,084 send_mail.py[line:65] INFO 邮件发送成功 | Subject=【动态定价程序报错】 | Recipients=['sujichao_123@163.com']
+2026-06-22 16:15:09,903 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 16:15:10,128 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 16:15:10,137 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：19
+2026-06-22 16:15:10,858 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 16:15:14,237 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 16:15:14,247 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】程序开始！
+2026-06-22 16:15:14,335 run.py[line:88] INFO ===============SOLO_PART航班价格建议完成！===============
+2026-06-22 16:15:14,585 DataTemporaryProcessing.py[line:19] INFO 生产环境接口：<Response [400]>
+2026-06-22 16:18:51,379 DataTemporaryProcessing.py[line:42] WARNING 程序临时执行，删除由此产生的重复数据！
+2026-06-22 16:19:06,496 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 16:19:06,768 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 16:19:06,777 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：19
+2026-06-22 16:19:07,458 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 16:19:10,837 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 16:19:10,846 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】程序开始！
+2026-06-22 16:19:10,961 basic_helper_fuction.py[line:88] ERROR ORA-00933: SQL command not properly ended
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 87, in _process_flight_type
+    data_storage(args, flt_type, result_data)
+  File "D:\CodeStarge\DynamicPricingLab\common\data_storage.py", line 74, in data_storage
+    delete_data(f""" DELETE FROM TMP_MAX_RETURN_ADVICE_PRICE WHERE FLT_SEGMENT IN (SELECT FLT_SEGMENT FROM {FLT_LIST_TABLE}) WHERE FLT_TYPE={flt_type}""")
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 552, in delete_data
+    db.deleteBatch(sql)
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 436, in deleteBatch
+    self.cursor.execute(sql)
+cx_Oracle.DatabaseError: ORA-00933: SQL command not properly ended
+2026-06-22 16:19:31,182 send_mail.py[line:65] INFO 邮件发送成功 | Subject=【动态定价程序报错】 | Recipients=['sujichao_123@163.com']
+2026-06-22 16:19:31,193 run.py[line:108] WARNING 航班动态定价托管程序执行失败！
+2026-06-22 16:19:31,358 DataTemporaryProcessing.py[line:19] INFO 生产环境接口：<Response [200]>
+2026-06-22 16:21:25,607 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 16:21:25,854 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 16:21:25,864 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：19
+2026-06-22 16:21:26,549 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 16:21:29,995 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 16:21:30,008 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】程序开始！
+2026-06-22 16:21:30,068 basic_helper_fuction.py[line:88] ERROR ORA-00933: SQL command not properly ended
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 87, in _process_flight_type
+    data_storage(args, flt_type, result_data)
+  File "D:\CodeStarge\DynamicPricingLab\common\data_storage.py", line 74, in data_storage
+    delete_data(f""" DELETE FROM TMP_MAX_RETURN_ADVICE_PRICE WHERE FLT_SEGMENT IN (SELECT FLT_SEGMENT FROM {FLT_LIST_TABLE}) WHERE FLT_TYPE={flt_type})""")
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 552, in delete_data
+    db.deleteBatch(sql)
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 436, in deleteBatch
+    self.cursor.execute(sql)
+cx_Oracle.DatabaseError: ORA-00933: SQL command not properly ended
+2026-06-22 16:21:51,130 send_mail.py[line:65] INFO 邮件发送成功 | Subject=【动态定价程序报错】 | Recipients=['sujichao_123@163.com']
+2026-06-22 16:21:51,136 run.py[line:108] WARNING 航班动态定价托管程序执行失败！
+2026-06-22 16:21:51,306 DataTemporaryProcessing.py[line:19] INFO 生产环境接口：<Response [200]>
+2026-06-22 16:22:15,477 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 16:22:15,731 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 16:22:15,739 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：19
+2026-06-22 16:22:16,410 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 16:22:19,851 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 16:22:19,864 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】程序开始！
+2026-06-22 16:22:19,913 basic_helper_fuction.py[line:88] ERROR ORA-00904: "SOLO_PART": invalid identifier
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 87, in _process_flight_type
+    data_storage(args, flt_type, result_data)
+  File "D:\CodeStarge\DynamicPricingLab\common\data_storage.py", line 74, in data_storage
+    delete_data(f""" DELETE FROM TMP_MAX_RETURN_ADVICE_PRICE WHERE FLT_SEGMENT IN (SELECT FLT_SEGMENT FROM {FLT_LIST_TABLE} WHERE FLT_TYPE={flt_type})""")
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 552, in delete_data
+    db.deleteBatch(sql)
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 436, in deleteBatch
+    self.cursor.execute(sql)
+cx_Oracle.DatabaseError: ORA-00904: "SOLO_PART": invalid identifier
+2026-06-22 16:23:08,823 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 16:23:09,099 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 16:23:09,110 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：19
+2026-06-22 16:23:09,776 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 16:23:13,332 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 16:23:13,341 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】程序开始！
+2026-06-22 16:23:13,400 basic_helper_fuction.py[line:88] ERROR ORA-00907: missing right parenthesis
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 87, in _process_flight_type
+    data_storage(args, flt_type, result_data)
+  File "D:\CodeStarge\DynamicPricingLab\common\data_storage.py", line 74, in data_storage
+    delete_data(f""" DELETE FROM TMP_MAX_RETURN_ADVICE_PRICE WHERE FLT_SEGMENT IN (SELECT FLT_SEGMENT FROM {FLT_LIST_TABLE} WHERE FLT_TYPE='{flt_type})'""")
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 552, in delete_data
+    db.deleteBatch(sql)
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 436, in deleteBatch
+    self.cursor.execute(sql)
+cx_Oracle.DatabaseError: ORA-00907: missing right parenthesis
+2026-06-22 16:23:35,475 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 16:23:35,797 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 16:23:35,812 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：19
+2026-06-22 16:23:36,612 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 16:23:40,428 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 16:23:40,440 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】程序开始！
+2026-06-22 16:23:40,506 run.py[line:88] INFO ===============SOLO_PART航班价格建议完成！===============
+2026-06-22 16:23:40,692 DataTemporaryProcessing.py[line:19] INFO 生产环境接口：<Response [400]>
+2026-06-22 16:24:29,270 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 16:24:29,512 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 16:24:29,522 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：19
+2026-06-22 16:24:30,222 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 16:24:33,728 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 16:24:33,740 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】程序开始！
+2026-06-22 16:24:33,828 run.py[line:88] INFO ===============SOLO_PART航班价格建议完成！===============
+2026-06-22 16:24:33,971 DataTemporaryProcessing.py[line:19] INFO 生产环境接口：<Response [400]>
+2026-06-22 16:25:43,606 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 16:25:43,606 basic_helper_fuction.py[line:58] INFO 检测到调试器已附加，自动禁用多进程模式
+2026-06-22 16:25:43,607 run.py[line:96] INFO 多进程已禁用，程序将以单进程模式运行
+2026-06-22 16:25:43,933 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 16:25:43,944 KNNBasePredictor.py[line:313] INFO 【SoloFlightNumberIncreaseKNN】多进程已被环境变量禁用，使用单进程模式，数据量：19
+2026-06-22 16:25:43,945 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：19
+2026-06-22 16:25:44,699 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 16:25:48,943 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 16:25:48,967 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】程序开始！
+2026-06-22 16:25:49,081 run.py[line:88] INFO ===============SOLO_PART航班价格建议完成！===============
+2026-06-22 16:27:26,111 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 16:27:26,112 basic_helper_fuction.py[line:58] INFO 检测到调试器已附加，自动禁用多进程模式
+2026-06-22 16:27:26,112 run.py[line:96] INFO 多进程已禁用，程序将以单进程模式运行
+2026-06-22 16:27:26,382 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 16:27:26,395 KNNBasePredictor.py[line:313] INFO 【SoloFlightNumberIncreaseKNN】多进程已被环境变量禁用，使用单进程模式，数据量：19
+2026-06-22 16:27:26,396 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：19
+2026-06-22 16:27:27,150 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 16:27:31,147 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 16:27:31,168 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】程序开始！
+2026-06-22 16:28:46,267 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 16:28:46,268 basic_helper_fuction.py[line:58] INFO 检测到调试器已附加，自动禁用多进程模式
+2026-06-22 16:28:46,269 run.py[line:96] INFO 多进程已禁用，程序将以单进程模式运行
+2026-06-22 16:28:46,548 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 16:28:46,562 KNNBasePredictor.py[line:313] INFO 【SoloFlightNumberIncreaseKNN】多进程已被环境变量禁用，使用单进程模式，数据量：19
+2026-06-22 16:28:46,562 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：19
+2026-06-22 16:28:47,314 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 16:28:51,323 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 16:28:51,345 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】程序开始！
+2026-06-22 16:29:05,264 run.py[line:88] INFO ===============SOLO_PART航班价格建议完成！===============
+2026-06-22 16:29:16,912 DataTemporaryProcessing.py[line:19] INFO 生产环境接口：<Response [200]>
+2026-06-22 16:50:10,138 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 16:54:44,219 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 16:54:46,496 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 16:54:47,033 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：19
+2026-06-22 16:54:50,209 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 16:55:10,054 basic_helper_fuction.py[line:88] ERROR ORA-00942: 表或视图不存在
+Traceback (most recent call last):
+  File "d:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "d:\CodeStarge\DynamicPricingLab\run.py", line 86, in _process_flight_type
+    result_data = predict_func(args)
+  File "d:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloPartFlightAdvicePriceLine.py", line 23, in solo_part_flight_advice_price
+    data = bkd_sharp_rise(args, data)
+  File "d:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloBkdSharpRise.py", line 145, in bkd_sharp_rise
+    prev_prices = _fetch_previous_ota_prices()
+  File "d:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloBkdSharpRise.py", line 31, in _fetch_previous_ota_prices
+    return get_data(
+  File "d:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 479, in get_data
+    col_names = db.queryTitle(sql)
+  File "d:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 355, in queryTitle
+    self.cursor.execute(sql)
+cx_Oracle.DatabaseError: ORA-00942: 表或视图不存在
+2026-06-22 16:55:28,245 send_mail.py[line:69] ERROR 邮件发送失败 | Subject=【动态定价程序报错】 | Recipients=['sujichao_123@163.com'] | Error=[WinError 10061] 由于目标计算机积极拒绝，无法连接。
+Traceback (most recent call last):
+  File "d:\CodeStarge\DynamicPricingLab\run.py", line 103, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "d:\CodeStarge\DynamicPricingLab\run.py", line 86, in _process_flight_type
+    result_data = predict_func(args)
+  File "d:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloPartFlightAdvicePriceLine.py", line 23, in solo_part_flight_advice_price
+    data = bkd_sharp_rise(args, data)
+  File "d:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloBkdSharpRise.py", line 145, in bkd_sharp_rise
+    prev_prices = _fetch_previous_ota_prices()
+  File "d:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloBkdSharpRise.py", line 31, in _fetch_previous_ota_prices
+    return get_data(
+  File "d:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 479, in get_data
+    col_names = db.queryTitle(sql)
+  File "d:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 355, in queryTitle
+    self.cursor.execute(sql)
+cx_Oracle.DatabaseError: ORA-00942: 表或视图不存在
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "d:\CodeStarge\DynamicPricingLab\common\send_mail.py", line 64, in send_mail
+    server.send_mail(recipients, mail)
+  File "D:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\zmail\server.py", line 115, in send_mail
+    with self.smtp_server as server:
+  File "D:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\zmail\abc.py", line 78, in __enter__
+    self.login()
+  File "D:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\zmail\server.py", line 235, in login
+    self._make_server()
+  File "D:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\zmail\server.py", line 220, in _make_server
+    self.server = smtplib.SMTP_SSL(self.host, self.port, __local__, timeout=self.timeout)
+  File "C:\Users\s_jc\AppData\Local\Programs\Python\Python310\lib\smtplib.py", line 1050, in __init__
+    SMTP.__init__(self, host, port, local_hostname, timeout,
+  File "C:\Users\s_jc\AppData\Local\Programs\Python\Python310\lib\smtplib.py", line 255, in __init__
+    (code, msg) = self.connect(host, port)
+  File "C:\Users\s_jc\AppData\Local\Programs\Python\Python310\lib\smtplib.py", line 341, in connect
+    self.sock = self._get_socket(host, port, self.timeout)
+  File "C:\Users\s_jc\AppData\Local\Programs\Python\Python310\lib\smtplib.py", line 1056, in _get_socket
+    new_socket = super()._get_socket(host, port, timeout)
+  File "C:\Users\s_jc\AppData\Local\Programs\Python\Python310\lib\smtplib.py", line 312, in _get_socket
+    return socket.create_connection((host, port), timeout,
+  File "C:\Users\s_jc\AppData\Local\Programs\Python\Python310\lib\socket.py", line 845, in create_connection
+    raise err
+  File "C:\Users\s_jc\AppData\Local\Programs\Python\Python310\lib\socket.py", line 833, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [WinError 10061] 由于目标计算机积极拒绝，无法连接。
+2026-06-22 16:55:28,467 run.py[line:108] WARNING 航班动态定价托管程序执行失败！
+2026-06-22 16:55:32,458 DataTemporaryProcessing.py[line:19] INFO 生产环境接口：<Response [502]>
+2026-06-22 17:03:13,074 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 17:03:14,828 KNNBasePredictor.py[line:295] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 17:03:15,287 KNNBasePredictor.py[line:267] INFO 【SoloFlightNumberIncreaseKNN】单进程模式，数据量：19
+2026-06-22 17:03:18,120 DataFetchRules.py[line:222] INFO 【DataFetchRules】[3天假-严格匹配] 样本不足(0条)，回退到 3天假-解除1级(DECODE映射DOW)
+2026-06-22 17:03:37,611 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 17:03:37,916 SoloAdvicePrice.py[line:52] INFO 【SoloFltAdvicePrice】程序开始！
+2026-06-22 17:03:39,836 run.py[line:88] INFO ===============SOLO_PART航班价格建议完成！===============
+2026-06-22 17:03:40,283 DataTemporaryProcessing.py[line:19] INFO 生产环境接口：<Response [502]>

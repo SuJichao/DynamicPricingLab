@@ -89,18 +89,18 @@ def _persist_surge_records(config,df):
     
     surge_records['CREATE_TIME'] = config.create_time
     surge_records['PID'] = [str(uuid.uuid1()) for _ in range(len(surge_records))]
-    insert_data("BKD_SUDDEN_INCREASE_RECORD", surge_records)
+    insert_data("SOLO_BKD_SUDDEN_RECORD", surge_records)
 
     # 删除多次插入的旧突增数据，每条航班只保留最新一条
     delete_data("""
-        DELETE FROM BKD_SUDDEN_INCREASE_RECORD S
+        DELETE FROM SOLO_BKD_SUDDEN_RECORD S
         WHERE PID IN
         (
         SELECT PID
         FROM
         (
           SELECT A.*,ROW_NUMBER () OVER (PARTITION BY A.FLT_DATE,A.FLT_NO,A.FLT_SEGMENT ORDER BY A.CREATE_TIME DESC) RN
-          FROM BKD_SUDDEN_INCREASE_RECORD A
+          FROM SOLO_BKD_SUDDEN_RECORD A
         )WHERE RN!=1
         )
     """)
@@ -110,7 +110,7 @@ def _load_previous_surge_and_floor(df):
     """加载历史突增记录，确保当前建议价格不低于历史突增价格。"""
     surge_history = get_data(
         "SELECT CATCH_DATE,EX_DIF,FLT_DATE,AIR_CODE,FLT_NO,FLT_SEGMENT,ADVICE_PRICE AS SUDDEN_INCREASE_ADVICE_PRICE,PID "
-        "FROM BKD_SUDDEN_INCREASE_RECORD"
+        "FROM SOLO_BKD_SUDDEN_RECORD"
     )
     df = pd.merge(df, surge_history, how='left',
                   on=['CATCH_DATE', 'EX_DIF', 'FLT_DATE', 'AIR_CODE', 'FLT_NO', 'FLT_SEGMENT'])
@@ -135,7 +135,7 @@ def bkd_sharp_rise(config, data):
 
     返回增加 ADVICE_PRICE、PRICE_INCREASE、BKD_INC 列的 DataFrame。
     """
-    logging.info("bkd_sharp_rise: 开始处理，输入 %d 行", len(data))
+    # logging.info("bkd_sharp_rise: 开始处理，输入 %d 行", len(data))
     df = data.copy()
     df.reset_index(drop=True, inplace=True)
     # 计算预测客座率
@@ -159,5 +159,5 @@ def bkd_sharp_rise(config, data):
     # 5. 加载历史突增，确保价格在一定时间内不回调
     df = _load_previous_surge_and_floor(df)
 
-    logging.info("bkd_sharp_rise: 处理完成，输出 %d 行", len(df))
+    # logging.info("bkd_sharp_rise: 处理完成，输出 %d 行", len(df))
     return df

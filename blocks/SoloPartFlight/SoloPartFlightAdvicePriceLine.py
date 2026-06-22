@@ -24,7 +24,7 @@ def solo_part_flight_advice_price(args):
     # 3 基于航班销售进度和销售速度进行建议价格计算
     data = SoloFltAdvicePrice(args, data)
     # 4 规则后处理
-    rule_post_processing(args, data)
+    data = rule_post_processing(args, data.result_data)
     return data
 
 if __name__ == '__main__':

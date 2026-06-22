@@ -1,5 +1,6 @@
 import logging
 import multiprocessing as mp
+import os
 import sys
 import datetime
 import time
@@ -13,6 +14,7 @@ from config.pricing_constants import (
     TIMING_MIN_EXECUTION_SECONDS,
     TIMING_SLEEP_SECONDS,
     TIMING_MAX_EXECUTION_SECONDS,
+    ENV_DISABLE_MULTIPROCESSING,
 )
 from config.db_queries import (
     FLT_LIST_TABLE, 
@@ -22,11 +24,61 @@ from config.db_queries import (
 # =============================================================
 # 1 基础辅助型函数
 # =============================================================
+# 模块级多进程状态标志
+_multiprocessing_enabled = True
+
+
+def _is_debugger_attached():
+    """检测当前进程是否在调试器（PyCharm / VSCode 等）中运行。
+
+    原理：
+        Python 调试器（pydevd / debugpy）通过 sys.settrace() 注入 trace function，
+        因此 sys.gettrace() 返回非 None 即表示调试器已附加。
+
+    Returns:
+        bool: True 表示调试器已附加
+    """
+    return hasattr(sys, 'gettrace') and sys.gettrace() is not None
+
+
 def _init_multiprocessing():
-    """Windows 多进程初始化。"""
+    """初始化多进程环境，并返回是否启用多进程。
+
+    Windows 上设置 spawn 启动方式。
+    以下情况会禁用多进程，强制使用单进程模式：
+        - 调试器已附加（PyCharm / VSCode 等），避免断点导致子进程 pipe 阻塞崩溃
+        - 环境变量 DISABLE_MULTIPROCESSING 已设置
+
+    Returns:
+        bool: True 表示多进程可用，False 表示已禁用（应使用单进程模式）
+    """
+    global _multiprocessing_enabled
+
+    if _is_debugger_attached():
+        logging.info("检测到调试器已附加，自动禁用多进程模式")
+        _multiprocessing_enabled = False
+        return False
+
+    if os.environ.get(ENV_DISABLE_MULTIPROCESSING):
+        logging.info("环境变量 %s 已设置，禁用多进程模式", ENV_DISABLE_MULTIPROCESSING)
+        _multiprocessing_enabled = False
+        return False
+
     if sys.platform.startswith('win'):
         mp.freeze_support()
         mp.set_start_method('spawn', force=True)
+
+    _multiprocessing_enabled = True
+    return True
+
+
+def is_multiprocessing_enabled():
+    """供其他模块查询多进程是否启用。
+
+    Returns:
+        bool: True 表示多进程可用，False 表示已禁用
+    """
+    return _multiprocessing_enabled
 
 def _alert_error(error):
     """记录异常堆栈并发送报警邮件。
@@ -141,6 +193,6 @@ def getpredictdata(args):
     }
 
     # 获取所有航线类型
-    flt_list = get_data(f"SELECT DISTINCT FLT_TYPE FROM {FLT_LIST_TABLE}").values.tolist()
+    flt_list = get_data(f"SELECT DISTINCT FLT_TYPE FROM {FLT_LIST_TABLE} WHERE FLT_TYPE='SOLO_PART'").values.tolist()
 
     return data_set, flt_list

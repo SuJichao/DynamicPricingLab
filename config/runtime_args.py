@@ -11,7 +11,6 @@ def get_argparse():
     # 1 basic config — 真正的 CLI / 运行时参数
     parser.add_argument('--data_source', type=str, default='oracle', help='data source')
     parser.add_argument('--version_number', type=str, default='7.0.0', help='version number')
-    parser.add_argument('--root_dir', type=str, default='/DynamicPricingPredictProject250901', help='root directory')
     parser.add_argument('--file_create_date', type=str, default=datetime.datetime.now().strftime('%Y-%m-%d'),
                         help='file create date')
     parser.add_argument('--file_create_hour', type=int, default=int(datetime.datetime.now().strftime('%H')),

@@ -6,6 +6,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 from blocks.SoloPartFlight.SoloBkdPredictKNN import solo_knn_est_run
 from blocks.SoloPartFlight.SoloBkdSharpRise import bkd_sharp_rise
 from blocks.SoloPartFlight.SoloAdvicePrice import SoloFltAdvicePrice
+from blocks.SoloPartFlight.SoloRulePostProcessing import rule_post_processing
 
 def solo_part_flight_advice_price(args):
     """独飞航线定价流水线入口。
@@ -23,7 +24,7 @@ def solo_part_flight_advice_price(args):
     # 3 基于航班销售进度和销售速度进行建议价格计算
     data = SoloFltAdvicePrice(args, data)
     # 4 规则后处理
-    # data = true_price_up_down(args, 'SOLO_PART', data)
+    rule_post_processing(args, data)
     return data
 
 if __name__ == '__main__':

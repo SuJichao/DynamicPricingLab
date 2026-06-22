@@ -1,7 +1,7 @@
 """
 【程序目的】
 针对独飞航线，在订座突增检测完成后进行基础定价（AI_ADVICE_PRICE）。
-输入需已含 BKD_PLF_EST 和突增检测结果（AVG_FARE_SK、PRICE_INCREASE）。
+输入需已含 BKD_PLF_EST 和突增检测结果（ADVICE_PRICE、PRICE_INCREASE）。
 """
 import logging
 
@@ -26,16 +26,10 @@ from common.database_oracle import get_data, insert_data
 
 OUTPUT_COLS = [
     'CATCH_DATE', 'CATCH_TIME', 'TIME_PT', 'EX_DIF', 'DOW', 'FLT_DATE',
-    'CARRIER', 'FLT_NO', 'FLT_SEGMENT', 'ROUTE', 'HXJG_FLAG', 'DEP_HOUR',
-    'DEP_MINUTE', 'CAP', 'DISCAP', 'BKD', 'PRICE_OTA', 'PRICE', 'UP_DATE',
-    'PJPJ_MIN', 'PJPJ_RATIO', 'SRS_ZL_DETR_LEFT', 'PJPJ_FINAL',
-    'HOL_BEFORE_TWO_DAY', 'HOL_BEFORE_ONE_DAY', 'HOL_AFTER_ONE_DAY',
-    'HOL_AFTER_TWO_DAY', 'HOLIDAY_EXACT_DAY', 'HOLIDAY_SPRING_FESTIVAL',
-    'HOLIDAY_RANGE', 'HOLIDAY_BEFORE_AND_AFTER', 'HOL_FALG', 'HOL_LAST',
-    'LATITUDE_DEP', 'LONGITUDE_DEP', 'LATITUDE_ARR', 'LONGITUDE_ARR',
-    'BKD_DEP', 'BKD_ARR', 'CREATE_TIME', 'DEP_TIME', 'YEAR', 'MF_ZL_AHEAD',
-    'SRS_SALES', 'PJPJ_SALES', 'T_FLAG', 'BKD_PLF_EST', 'SYZW_PLF',
-    'SRS_ZL_LEFT', 'BKD_INCOME_LEFT', 'AI_ADVICE_PRICE',
+    'AIR_CODE', 'FLT_NO', 'FLT_SEGMENT', 'ROUTE', 'HXJG_FLAG', 'DEP_HOUR',
+    'DEP_MINUTE', 'CAP', 'DISCAP', 'BKD', 'PRICE_OTA', 'PRICE',
+    'PJPJ_FINAL', 'SRS_SALES', 'PJPJ_SALES', 
+    'BKD_PLF_EST', 'SRS_ZL_LEFT', 'T_FLAG', 'AI_ADVICE_PRICE','CREATE_TIME',
 ]
 
 
@@ -46,7 +40,7 @@ OUTPUT_COLS = [
 class SoloFltAdvicePrice(object):
     """独飞航线基础定价。
 
-    前置条件：输入 DataFrame 需已包含 BKD_PLF_EST、AVG_FARE_SK、PRICE_INCREASE
+    前置条件：输入 DataFrame 需已包含 BKD_PLF_EST、ADVICE_PRICE、PRICE_INCREASE
     （由编排层分别在 KNN 预测后和订座突增检测后设置）。
     """
 
@@ -72,25 +66,18 @@ class SoloFltAdvicePrice(object):
     # ----------------------------------------------------------
 
     def _prepare_data(self):
-        """填充缺失值、合并历史销售数据、计算辅助特征。"""
+        """填充缺失值、合并历史销售数据（销售速度快、慢标签）、计算辅助特征。"""
         df = self.data
         df['PRICE'].fillna(SOLO_FLT_FULL_PRICE_FALLBACK, inplace=True)
 
         # 合并独飞历史销售数据
         hist_sales = get_data(
-            'SELECT FLT_DATE,CARRIER,FLT_NO,FLT_SEGMENT,SRS_SALES,PJPJ_SALES,T_FLAG '
-            'FROM TMP_DP_SOLO_SRS_HIS_PH'
+            'SELECT FLT_DATE,AIR_CODE,FLT_NO,FLT_SEGMENT,SRS_SALES,PJPJ_SALES,T_FLAG '
+            'FROM SOLO_FLT_SRS_HIS_TFLAG'
         )
         df = pd.merge(df, hist_sales,
-                      on=['FLT_DATE', 'CARRIER', 'FLT_NO', 'FLT_SEGMENT'])
+                      on=['FLT_DATE', 'AIR_CODE', 'FLT_NO', 'FLT_SEGMENT'])
         df['PJPJ_SALES'].fillna(0, inplace=True)
-
-        # 剩余座位对应客座率
-        df['SYZW_PLF'] = np.where(
-            df['CAP'] - df['BKD'] > 0,
-            df['SRS_ZL_LEFT'] / (df['CAP'] - df['BKD']),
-            0
-        )
 
         self.data = df
 
@@ -102,29 +89,29 @@ class SoloFltAdvicePrice(object):
         """计算 AI_ADVICE_PRICE。
 
         4 条策略分支，优先级从高到低：
-          1. PRICE_INCREASE > 0  → 保留突增价格 (AVG_FARE_SK)
-          2. EX_DIF >= 29        → 取历史成交均价与当前 OTA 价的较小值
+          1. PRICE_INCREASE > 0  → 保留突增价格 (ADVICE_PRICE)
+          2. EX_DIF > 29        → 取历史成交均价与当前 OTA 价的较小值
           3. T_FLAG >= 0         → 销售偏快/正常，客座率乘数 × (成交价 + T_FLAG折补)
           4. T_FLAG < 0          → 销售偏慢，客座率乘数 × 折后成交价，限制区间
         """
         df = self.data
         conds = [
             df['PRICE_INCREASE'] > 0,
-            df['EX_DIF'] >= 29,
+            df['EX_DIF'] > 29,
             df['T_FLAG'] >= 0,
             df['T_FLAG'] < 0,
         ]
         choices = [
-            df['AVG_FARE_SK'],
-            np.minimum(df['PJPJ_MIN'], df['PRICE_OTA']),
+            df['ADVICE_PRICE'],
+            np.minimum(df['PJPJ_FINAL'], df['PRICE_OTA']),
             self._price_tflag_positive(df),
             self._price_tflag_negative(df),
         ]
-        df['AI_ADVICE_PRICE'] = np.select(conds, choices, default=df['AVG_FARE_SK'])
-        self.bottom_price_demand = df
+        df['AI_ADVICE_PRICE'] = np.select(conds, choices, default=df['ADVICE_PRICE'])
+        self.result_data = df
 
     def _price_tflag_positive(self, df):
-        """T_FLAG >= 0（销售不慢）的定价公式。
+        """T_FLAG >= 0（销售偏快）的定价公式。
 
         定价 = max(
             max(min(BKD_PLF_EST / 0.95, 1.5), 1) * (成交价 + T_FLAG × 0.1 × 全票价),
@@ -175,8 +162,7 @@ class SoloFltAdvicePrice(object):
 
     def _persist_result(self):
         """选择输出列并持久化到数据库。"""
-        self.result_data = self.bottom_price_demand
-        tmp_data = self.bottom_price_demand[OUTPUT_COLS]
+        tmp_data = self.result_data[OUTPUT_COLS]
         insert_data("SOLO_FLIGHT_ADVICE_DATA_COPY", tmp_data)
 
 

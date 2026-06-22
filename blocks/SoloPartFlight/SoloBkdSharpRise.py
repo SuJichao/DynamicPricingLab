@@ -29,7 +29,7 @@ from common.database_oracle import get_data, delete_data, insert_data
 def _fetch_previous_ota_prices():
     """获取上一采集时点的外放价格和订座人数。"""
     return get_data(
-        f"SELECT FLT_DATE,CARRIER AS AIR_CODE,FLT_NO,FLT_SEGMENT,BKD_OLD FROM {SOLO_PREVIOUS_PRICE_TABLE}"
+        f"SELECT FLT_DATE,AIR_CODE,FLT_NO,FLT_SEGMENT,BKD_OLD FROM {SOLO_PREVIOUS_PRICE_TABLE}"
     )
 
 
@@ -109,12 +109,11 @@ def _persist_surge_records(config,df):
 def _load_previous_surge_and_floor(df):
     """加载历史突增记录，确保当前建议价格不低于历史突增价格。"""
     surge_history = get_data(
-        "SELECT CATCH_DATE,EX_DIF,FLT_DATE,CARRIER,FLT_NO,FLT_SEGMENT,ADVICE_PRICE AS SUDDEN_INCREASE_ADVICE_PRICE,PID "
+        "SELECT CATCH_DATE,EX_DIF,FLT_DATE,AIR_CODE,FLT_NO,FLT_SEGMENT,ADVICE_PRICE AS SUDDEN_INCREASE_ADVICE_PRICE,PID "
         "FROM BKD_SUDDEN_INCREASE_RECORD"
     )
     df = pd.merge(df, surge_history, how='left',
-                  left_on=['CATCH_DATE', 'EX_DIF', 'FLT_DATE', 'AIR_CODE', 'FLT_NO', 'FLT_SEGMENT'],
-                  right_on=['CATCH_DATE', 'EX_DIF', 'FLT_DATE', 'CARRIER', 'FLT_NO', 'FLT_SEGMENT'])
+                  on=['CATCH_DATE', 'EX_DIF', 'FLT_DATE', 'AIR_CODE', 'FLT_NO', 'FLT_SEGMENT'])
     df['ADVICE_PRICE'] = np.where(
         df['SUDDEN_INCREASE_ADVICE_PRICE'] > 0,
         np.maximum(df['SUDDEN_INCREASE_ADVICE_PRICE'], df['PRICE_OTA']),
@@ -132,11 +131,11 @@ def bkd_sharp_rise(config, data):
 
     输入需含以下列（来自 KNN 输出 + 编排层预计算的 BKD_PLF_EST）：
         FLT_DATE, CATCH_DATE, FLT_SEGMENT, EX_DIF, TIME_PT,
-        CARRIER, FLT_NO, PRICE, BKD, BKD_PLF_EST
+        AIR_CODE, FLT_NO, PRICE, BKD, BKD_PLF_EST
 
-    返回增加 AVG_FARE_SK、PRICE_INCREASE、BKD_INC 列的 DataFrame。
+    返回增加 ADVICE_PRICE、PRICE_INCREASE、BKD_INC 列的 DataFrame。
     """
-    # logging.info("bkd_sharp_rise: 开始处理，输入 %d 行", len(data))
+    logging.info("bkd_sharp_rise: 开始处理，输入 %d 行", len(data))
     df = data.copy()
     df.reset_index(drop=True, inplace=True)
     # 计算预测客座率
@@ -160,5 +159,5 @@ def bkd_sharp_rise(config, data):
     # 5. 加载历史突增，确保价格在一定时间内不回调
     df = _load_previous_surge_and_floor(df)
 
-    # logging.info("bkd_sharp_rise: 处理完成，输出 %d 行", len(df))
+    logging.info("bkd_sharp_rise: 处理完成，输出 %d 行", len(df))
     return df

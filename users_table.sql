@@ -1,0 +1,12 @@
+select * from user_tables;
+drop table SOLO_FLIGHT_KNN_TARGET;
+drop table SMALL_FUT_EST_INPUT;
+drop table SOLO_FUT_EST_INPUT;
+drop table TMP_SOLO_FLT_OLD_DATA;
+drop table BKD_SUDDEN_INCREASE_RECORD;
+drop table FLT_SEG_LIST;
+drop table HIS_FUT_FLT_DATA;
+drop table HIS_FUT_SOLO_FLT_DATA;
+drop table SMALL_FLT_KNN_LIST;
+drop table SOLO_FLT_KNN_LIST;
+drop table TMP_DP_SOLO_SRS_HIS_PH;

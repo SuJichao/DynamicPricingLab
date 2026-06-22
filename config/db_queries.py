@@ -12,7 +12,7 @@
 # ============================================================
 
 FLT_LIST_TABLE = 'FLT_SEG_LIST'
-
+FLIGHT_PRICE_BOTTOM_SQL = 'MXZ_DP_PRICE_CONTRAL'
 
 # ============================================================
 # 小份额航线 (SmallPartFlight)

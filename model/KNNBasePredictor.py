@@ -18,14 +18,54 @@ KNN 预测管道基类。
 """
 
 import copy
+import importlib
 import logging
 import multiprocessing as mp
 from multiprocessing import Pool
+from types import SimpleNamespace
+
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
 from common.database_oracle import get_data, delete_data, insert_data
 from model.DataFetchRules import fetch_train_data, fetch_predict_data
+
+
+# ============================================================
+# 模块级多进程 worker（解决 Windows spawn 模式下绑定方法不可 pickle 的问题）
+# ============================================================
+def _mp_worker(args):
+    """多进程 worker（模块级函数，可被 pickle 序列化）。
+
+    在 Windows spawn 模式下，子进程会重新导入所有模块。
+    本函数接收简单参数，在子进程中重新创建预测器实例并调用其 worker 方法，
+    避免跨进程序列化绑定方法（self.worker）导致的 pickle 错误。
+
+    Args:
+        args: (predictor_cls_path, config_dict, i) 三元组
+              - predictor_cls_path: 预测器类的完整路径，如
+                'blocks.SoloPartFlight.SoloBkdPredictKNN.SoloFlightNumberIncreaseKNN'
+              - config_dict: argparse.Namespace 的 vars() 字典（仅含基本类型值）
+              - i: 预测列表中待处理的行索引
+    Returns:
+        pd.DataFrame: 预测结果数据（可能为空）
+    """
+    predictor_cls_path, config_dict, i = args
+
+    # 从字符串路径动态导入预测器类
+    module_path, class_name = predictor_cls_path.rsplit('.', 1)
+    mod = importlib.import_module(module_path)
+    predictor_cls = getattr(mod, class_name)
+
+    # 用字典重建配置对象（避免 Namespace 中潜在的非 pickle 字段）
+    config = SimpleNamespace(**config_dict)
+
+    # 在子进程中创建全新的预测器实例
+    # 各子进程会独立初始化 database_oracle 连接池、日志等资源
+    predictor = predictor_cls(config)
+
+    # 调用原有的实例级 worker 方法
+    return predictor.worker(i)
 
 
 class KNNBasePredictor:
@@ -240,9 +280,19 @@ class KNNBasePredictor:
             logging.info(
                 f"【{self.__class__.__name__}】{num_cores}进程模式，数据量：{len(knn_list)}")
             try:
+                # 构造参数：类路径（用于子进程动态导入）+ 配置字典 + 行索引
+                class_path = (
+                    f"{self.__class__.__module__}."
+                    f"{self.__class__.__qualname__}"
+                )
+                config_dict = vars(self.config)
+                task_args = [
+                    (class_path, config_dict, i)
+                    for i in range(len(knn_list))
+                ]
                 with Pool(processes=num_cores) as pool:
                     results = list(
-                        pool.imap_unordered(self.worker, range(len(knn_list)))
+                        pool.imap_unordered(_mp_worker, task_args)
                     )
                     if results:
                         self.result_data = pd.concat(

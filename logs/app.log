@@ -10,3 +10,59 @@ Traceback (most recent call last):
 TypeError: 'NoneType' object is not subscriptable
 2026-06-13 15:24:30,563 run.py[line:51] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 2026-06-13 15:27:17,506 send_mail.py[line:118] ERROR 所有 IMAP 服务器均连接失败，请检查网络或服务器地址
+2026-06-21 11:21:22,393 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-21 11:21:24,734 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-21 11:21:24,734 KNNBasePredictor.py[line:254] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-21 11:21:25,275 KNNBasePredictor.py[line:280] INFO 【SoloFlightNumberIncreaseKNN】4进程模式，数据量：146
+2026-06-21 11:22:36,132 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-21 11:23:34,788 basic_helper_fuction.py[line:36] ERROR ORA-00904: "CARRIER": 标识符无效
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 101, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 86, in _process_flight_type
+    result_data = predict_func(args)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloPartFlightAdvicePriceLine.py", line 22, in solo_part_flight_advice_price
+    data = bkd_sharp_rise(args, data)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloBkdSharpRise.py", line 160, in bkd_sharp_rise
+    df = _load_previous_surge_and_floor(df)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloBkdSharpRise.py", line 111, in _load_previous_surge_and_floor
+    surge_history = get_data(
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 409, in get_data
+    col_names = db.queryTitle(sql)
+  File "D:\CodeStarge\DynamicPricingLab\common\database_oracle.py", line 285, in queryTitle
+    self.cursor.execute(sql)
+cx_Oracle.DatabaseError: ORA-00904: "CARRIER": 标识符无效
+2026-06-22 09:15:43,016 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 09:15:45,849 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 09:15:45,851 KNNBasePredictor.py[line:254] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 09:15:46,608 KNNBasePredictor.py[line:280] INFO 【SoloFlightNumberIncreaseKNN】4进程模式，数据量：146
+2026-06-22 09:16:59,534 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 09:18:43,973 run.py[line:42] INFO <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<【航班动态定价托管】7.0.0 程序开始！>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+2026-06-22 09:18:46,498 SoloBkdPredictKNN.py[line:47] INFO 【SoloFlightNumberIncreaseKNN】7.0.0 程序开始！
+2026-06-22 09:18:46,500 KNNBasePredictor.py[line:254] INFO 【SoloFlightNumberIncreaseKNN】程序开始！
+2026-06-22 09:18:47,115 KNNBasePredictor.py[line:280] INFO 【SoloFlightNumberIncreaseKNN】4进程模式，数据量：146
+2026-06-22 09:20:01,834 SoloBkdSharpRise.py[line:74] INFO bkd_sharp_rise: 检测到 0 条航班触发订座突增提价
+2026-06-22 09:23:10,395 SoloAdvicePrice.py[line:57] INFO 【SoloFltAdvicePrice】7.0.0 程序开始！
+2026-06-22 09:23:18,098 basic_helper_fuction.py[line:36] ERROR 'CARRIER'
+Traceback (most recent call last):
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 101, in run
+    _process_flight_type(args, flt_type, data_set)
+  File "D:\CodeStarge\DynamicPricingLab\run.py", line 86, in _process_flight_type
+    result_data = predict_func(args)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloPartFlightAdvicePriceLine.py", line 24, in solo_part_flight_advice_price
+    data = SoloFltAdvicePrice(args, data)
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 58, in __init__
+    self.compute_advice_price()
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 66, in compute_advice_price
+    self._prepare_data()
+  File "D:\CodeStarge\DynamicPricingLab\blocks\SoloPartFlight\SoloAdvicePrice.py", line 84, in _prepare_data
+    df = pd.merge(df, hist_sales,
+  File "d:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\pandas\core\reshape\merge.py", line 110, in merge
+    op = _MergeOperation(
+  File "d:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\pandas\core\reshape\merge.py", line 703, in __init__
+    ) = self._get_merge_keys()
+  File "d:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\pandas\core\reshape\merge.py", line 1179, in _get_merge_keys
+    left_keys.append(left._get_label_or_level_values(lk))
+  File "d:\CodeStarge\venvs\dynamic_pricing_env\lib\site-packages\pandas\core\generic.py", line 1850, in _get_label_or_level_values
+    raise KeyError(key)
+KeyError: 'CARRIER'

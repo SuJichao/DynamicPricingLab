@@ -96,7 +96,7 @@ class KNNBasePredictor:
     DEFAULT_K = 3
     HOLIDAY_K = 1
     SPRING_FESTIVAL_K = 1
-    MULTIPROCESS_THRESHOLD = 30
+    MULTIPROCESS_THRESHOLD = 10
     FETCH_CONTEXT = None       # DataFetchRules.FetchContext
 
     # === 子类可选覆盖 ===
@@ -168,7 +168,7 @@ class KNNBasePredictor:
     
     def _load_knn_list(self):
         """加载预测列表"""
-        return get_data(f"SELECT * FROM {self._get_list_table()}")
+        return get_data(f"SELECT * FROM {self._get_list_table()} ORDER BY HX")
 
     # --- 公共方法 ---
 
@@ -272,6 +272,7 @@ class KNNBasePredictor:
             try:
                 self.predict_data = self.fetch_predict_data(row)
                 self.train_data = self.fetch_train_data(row)
+                # logging.info(f"航班序号：{row['HX']}")
                 if len(self.train_data) > 0:
                     self.knn_est(row)
                     results.append(self.tmp_data)
@@ -303,7 +304,7 @@ class KNNBasePredictor:
 
         # 判断是否走多进程路径
         use_multiprocessing = (
-            len(knn_list) >= self.MULTIPROCESS_THRESHOLD
+            len(knn_list) <= self.MULTIPROCESS_THRESHOLD
             and is_multiprocessing_enabled()
         )
 

@@ -9,6 +9,7 @@ import schedule
 from common.send_mail import send_mail
 from common.get_logger import get_logger
 from common.database_oracle import callproc, get_data
+from config.runtime_args import get_argparse
 
 from config.pricing_constants import (
     TIMING_MIN_EXECUTION_SECONDS,
@@ -89,7 +90,7 @@ def _alert_error(error):
     send_mail('【动态定价程序报错】',
               f'动态定价程序报错！请及时前往云桌面检查。\n\n错误信息为：{error}')
 
-def should_run(args):
+def should_run(create_time):
     """根据进程已运行时长判断是否继续执行预测。
 
     Args:
@@ -97,9 +98,9 @@ def should_run(args):
     Returns:
         True 应执行 run()，False 应跳过
     """
-    elapsed = (datetime.datetime.now() - args.create_time).total_seconds()
+    elapsed = (datetime.datetime.now() - create_time).total_seconds()
     if elapsed < TIMING_MIN_EXECUTION_SECONDS:
-        logging.warning('===进程执行完毕后暂停20s！===')
+        logging.warning('===进程执行完毕后暂停10s！===')
         time.sleep(TIMING_SLEEP_SECONDS)
         return True
     if elapsed > TIMING_MAX_EXECUTION_SECONDS:
@@ -107,11 +108,12 @@ def should_run(args):
         return False
     return True
 
-def catch_data_timeliness(args):
+def catch_data_timeliness():
     """监控数据采集管道是否过期（超过 150 分钟发邮件报警）。
         Args:
         args: argparse 命名空间
     """
+    args = get_argparse()
     now_create_time = get_data('SELECT MAX(UP_DATE) FROM KD_FUTURE_TMP_SJC_NEW').values[0][0]
     sysdate = np.datetime64(args.create_time)
     catch_time = np.datetime64(now_create_time)

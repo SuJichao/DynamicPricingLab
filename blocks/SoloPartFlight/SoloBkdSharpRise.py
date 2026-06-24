@@ -114,9 +114,10 @@ def _load_previous_surge_and_floor(df):
     )
     df = pd.merge(df, surge_history, how='left',
                   on=['CATCH_DATE', 'EX_DIF', 'FLT_DATE', 'AIR_CODE', 'FLT_NO', 'FLT_SEGMENT'])
+    col_sud = df['SUDDEN_INCREASE_ADVICE_PRICE'].fillna(-np.inf)
     df['ADVICE_PRICE'] = np.where(
-        df['SUDDEN_INCREASE_ADVICE_PRICE'] > 0,
-        np.maximum(df['SUDDEN_INCREASE_ADVICE_PRICE'], df['PRICE_OTA']),
+        col_sud > 0,
+        np.maximum(col_sud, df['PRICE_OTA']),
         df['PRICE_OTA']
     )
     return df

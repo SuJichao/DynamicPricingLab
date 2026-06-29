@@ -6,7 +6,7 @@
 使用方式：
     from config.pricing_constants import *
 """
-
+import numpy as np
 # ============================================================
 # 小份额航线 (SMALL_PART) 定价参数
 # ============================================================
@@ -179,7 +179,7 @@ SOLO_KNN_TARGET_COLS = (
 # 进程执行时序控制
 # ============================================================
 
-TIMING_MIN_EXECUTION_SECONDS = 3
+TIMING_MIN_EXECUTION_SECONDS = 2
 """进程从参数解析到此处耗时少于此值，判定前序进程尚未结束，须等待"""
 
 TIMING_SLEEP_SECONDS = 20
@@ -210,3 +210,4 @@ ENV_DISABLE_MULTIPROCESSING = 'DISABLE_MULTIPROCESSING'
 def round_to_10(value):
     """将价格取整到 10 的倍数（如 123 → 120, 128 → 130）"""
     return round(value / PRICE_ROUND_BASE) * PRICE_ROUND_BASE
+

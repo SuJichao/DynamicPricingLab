@@ -91,6 +91,7 @@ def _format_output(df, config):
     output.reset_index(drop=True, inplace=True)
 
     # 占位列（保持与其他航线模块的列对齐）
+    output['FLT_NO'] = output['AIR_CODE'] +output['FLT_NO']
     output['WBD_ID'] = 0
     output['AVG_FARE_SK_IND'] = 0
     output['AVG_FARE_DELTA'] = 0

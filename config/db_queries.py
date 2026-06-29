@@ -13,6 +13,8 @@
 
 FLT_LIST_TABLE = 'FLT_SEG_LIST'
 FLIGHT_PRICE_BOTTOM_SQL = 'FLT_ADVICE_PRICE_BOTTOM_DIY'
+TO_RM_SYSDATE_RESULT_DATA = 'TMP_MAX_RETURN_ADVICE_PRICE'
+EST_DATA_PROCEDURE_NAME = 'DP_EST_DATA_CHG'
 
 # ============================================================
 # 小份额航线 (SmallPartFlight)

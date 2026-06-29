@@ -215,14 +215,14 @@ class DataFetchRule:
 
     def fetch(self, ctx, tmp_list):
         sql = self._build_sql(ctx, tmp_list)
-        # 可选：打印 SQL 用于调试
-        # logging.debug(f"Executing SQL for 【DataFetchRules】[{self.name}]: {sql}")
         data = get_data(sql)
         if len(data) <= 0 and self.fallback:
-            logging.info(
-                f"【DataFetchRules】[{self.name}] 样本不足({len(data)}条)，"
-                f"回退到 {self.fallback.name}")
             return self.fallback.fetch(ctx, tmp_list)
+        if len(data) <= 0:
+            logging.info(
+                f"【DataFetchRules】航班序号：{tmp_list['HX']}，起飞日期：{tmp_list['FLT_DATE'].strftime('%m月%d日')}，航段：{tmp_list['FLT_SEGMENT']}，航班号：{tmp_list['FLT_NO']} 样本不足({len(data)}条)")
+            # 可选：打印 SQL 用于调试
+            # logging.info(f"Executing SQL for 【DataFetchRules】[{self.name}]: {sql}")
         return data
 
 

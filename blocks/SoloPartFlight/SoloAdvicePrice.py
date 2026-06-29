@@ -140,7 +140,7 @@ class SoloFltAdvicePrice(object):
             min(max(min(BKD_PLF_EST, 1), 0.9), 1) * (1 + T_FLAG × 0.1) × 成交价,
             lower = OTA价格 - 全票价 × 0.1,
             upper = OTA价格
-        )
+        )a
         """
         multiplier = np.minimum(
             np.maximum(np.minimum(df['BKD_PLF_EST'], 1),

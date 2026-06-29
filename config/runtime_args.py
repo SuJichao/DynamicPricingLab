@@ -22,10 +22,6 @@ def get_argparse():
     parser.add_argument('--weekday', type=str, default=datetime.datetime.now().isoweekday(),
                         help='weekday')
 
-    # 2 功能开关
-    parser.add_argument('--use_v2_predictor', type=bool, default=False,
-                        help='启用新版 KNN 预测器（规则链+管道，v2 重构版）')
-
     args = parser.parse_args()
     return args
 

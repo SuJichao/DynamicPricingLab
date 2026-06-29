@@ -10,7 +10,12 @@ from config.runtime_args import get_argparse
 from common.send_mail import clean_sent_mails
 from common.database_oracle import callproc, delete_data
 from common.data_storage import data_storage
+<<<<<<< HEAD
 from common.basic_helper_fuction import _init_multiprocessing, _alert_error, _show_menu, should_run, catch_data_timeliness, data_timeliness, getpredictdata, advice_price_output, delete_deduplication_data
+=======
+from common.DataTemporaryProcessing import advice_price_output, delete_deduplication_data
+from common.basic_helper_fuction import _init_multiprocessing, _alert_error, _show_menu, should_run, catch_data_timeliness, data_timeliness, getpredictdata
+>>>>>>> 6873a42c47e65f3b9c5c468fbc9aeee2e7768786
 from config.db_queries import (FLT_LIST_TABLE, TO_RM_SYSDATE_RESULT_DATA, EST_DATA_PROCEDURE_NAME)
 
 # 主要业务场景

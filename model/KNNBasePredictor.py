@@ -305,7 +305,11 @@ class KNNBasePredictor:
         # 判断是否走多进程路径
         use_multiprocessing = (
             len(knn_list) <= self.MULTIPROCESS_THRESHOLD
+<<<<<<< HEAD
             or is_multiprocessing_enabled()
+=======
+            and is_multiprocessing_enabled()
+>>>>>>> 6873a42c47e65f3b9c5c468fbc9aeee2e7768786
         )
 
         if not use_multiprocessing:

@@ -192,7 +192,7 @@ class KNNBasePredictor:
 
     def _choose_k(self, knn_list):
         """根据节假日标志选择 K 值"""
-        if knn_list.get('HOL_FALG') == 0:
+        if knn_list.get('HOL_FLAG') == 0:
             return self.DEFAULT_K
         elif knn_list.get('HOLIDAY_SPRING_FESTIVAL') == 1:
             return self.SPRING_FESTIVAL_K
@@ -305,11 +305,7 @@ class KNNBasePredictor:
         # 判断是否走多进程路径
         use_multiprocessing = (
             len(knn_list) <= self.MULTIPROCESS_THRESHOLD
-<<<<<<< HEAD
             or is_multiprocessing_enabled()
-=======
-            and is_multiprocessing_enabled()
->>>>>>> 6873a42c47e65f3b9c5c468fbc9aeee2e7768786
         )
 
         if not use_multiprocessing:

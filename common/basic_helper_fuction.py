@@ -10,12 +10,9 @@ from common.send_mail import send_mail
 from common.get_logger import get_logger
 from common.database_oracle import callproc, get_data
 from config.runtime_args import get_argparse
-<<<<<<< HEAD
 from common.database_oracle import get_data, delete_data
 from common.request import advicePriceUpdate
 
-=======
->>>>>>> 6873a42c47e65f3b9c5c468fbc9aeee2e7768786
 
 from config.pricing_constants import (
     TIMING_MIN_EXECUTION_SECONDS,

@@ -165,12 +165,12 @@ SMALL_PART_KNN_OUTPUT_COLS = (
 """小份额航线 KNN 输出列"""
 
 SOLO_KNN_FEATURE_COLS = (
-    'FLT_YEAR', 'FLT_MONTH', 'date_sin', 'date_cos', 'HOL_LAST', 'chunjie_sin',
+    'FLT_YEAR', 'FLT_MONTH', 'date_sin', 'date_cos', 'HOL_LAST', 'chunjie_sin', 'BKD_SK', 'PRICE_OTA',
 )
 """独飞航线 KNN 特征列"""
 
 SOLO_KNN_TARGET_COLS = (
-    'PJPJ_LEFT','SRS_ZL_LEFT', 'PJPJ_FINAL', 'EX_DIF',
+    'SRS_ZL_LEFT', 'PJPJ_LEFT', 'EX_DIF', 'PJPJ_FINAL',
 )
 """独飞航线 KNN 预测目标列"""
 

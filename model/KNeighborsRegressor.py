@@ -88,10 +88,7 @@ class SoloFltKnnRegressorFunction(KnnRegressorFunction):
         result = np.zeros(nn_y.shape[1])
 
         # 列0: 剩余人数增量 — max(median, mean)
-        result[0] = np.maximum(
-            statistics.median(nn_y[:, 0]),
-            np.mean(nn_y[:, 0], axis=0)
-        )
+        result[0] = np.mean(nn_y[:, 0], axis=0)
 
         # 列1: 最低均价 — 当 EX_DIF(列2)均值 >= 29 时取 max，否则取 mean
         result[1] = np.where(

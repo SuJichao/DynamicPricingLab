@@ -92,71 +92,77 @@ class SoloFltAdvicePrice(object):
         4 条策略分支，优先级从高到低：
           1. PRICE_INCREASE > 0  → 保留突增价格 (ADVICE_PRICE)
           2. EX_DIF > 29        → 取历史成交均价与当前 OTA 价的较小值
-          3. T_FLAG >= 0         → 销售偏快/正常，客座率乘数 × (成交价 + T_FLAG折补)
-          4. T_FLAG < 0          → 销售偏慢，客座率乘数 × 折后成交价，限制区间
+          3. T_FLAG>=0 & BKD_PLF_EST >=0.90：销售速度和进度都很理想 定价 = max(min(max(BKD_PLF_EST, 1) , 1.5) * (成交价 + T_FLAG × 0.1 × 全票价), OTA价格)
+          4. T_FLAG>=0 & BKD_PLF_EST <0.90 ：销售速度快，但进度不理想 定价= min (成交价, OTA价格)
+          5. T_FLAG<0 & BKD_PLF_EST >=0.90：销售速度慢，但进度理想 定价 = max(成交价, OTA价格)
+          6. T_FLAG<0 & BKD_PLF_EST <0.90：销售速度和进度都不理想 定价 = clamp(min(max(BKD_PLF_EST/0.9, 0.9) , 1) * (成交价 + T_FLAG × 0.1 × 全票价), lower = OTA价格 - 全票价 × 0.1, upper = OTA价格)
         """
         df = self.data
         conds = [
             df['PRICE_INCREASE'] > 0,
             df['EX_DIF'] > 29,
-            df['T_FLAG'] >= 0,
-            df['T_FLAG'] < 0,
+            (df['T_FLAG'] >= 0) & (df['BKD_PLF_EST'] >= 0.95),
+            (df['T_FLAG'] >= 0) & (df['BKD_PLF_EST'] < 0.95),
+            (df['T_FLAG'] < 0) & (df['BKD_PLF_EST'] >= 0.95),
+            (df['T_FLAG'] < 0) & (df['BKD_PLF_EST'] < 0.95),
         ]
         choices = [
             df['ADVICE_PRICE'],
             np.minimum(df['PJPJ_FINAL'], df['PRICE_OTA']),
-            self._price_tflag_positive(df),
-            self._price_tflag_negative(df),
+            self._price_tflag_positive_plfest_positive(df),
+            self._price_tflag_positive_plfest_negative(df),
+            self._price_tflag_negative_plfest_positive(df),
+            self._price_tflag_negative_plfest_negative(df),
         ]
         df['ADVICE_PRICE'] = np.select(conds, choices, default=df['ADVICE_PRICE'])
         self.result_data = df
 
-    def _price_tflag_positive(self, df):
-        """T_FLAG >= 0（销售偏快）的定价公式。
+    def _price_tflag_positive_plfest_positive(self, df):
+        """T_FLAG>=0 & BKD_PLF_EST >=0.90：销售速度和进度都很理想
 
-        定价 = max(
-            max(min(BKD_PLF_EST / 0.95, 1.5), 1) * (成交价 + T_FLAG × 0.1 × 全票价),
-            OTA价格 - 全票价 × 0.1
-        )
+        定价 = max(min(max(BKD_PLF_EST, 1) , 1.5) * (成交价 + T_FLAG × 0.1 × 全票价), OTA价格)
         """
-        multiplier = np.maximum(
-            np.minimum(df['BKD_PLF_EST'] / SOLO_FLT_TARGET_LOAD_FACTOR,
-                       SOLO_FLT_PRICE_MULTIPLIER_MAX),
-            1
-        )
+        multiplier = np.minimum(
+            np.maximum(df['BKD_PLF_EST'], 1),
+                       1.5)
+
         base_price = (
             df['PJPJ_SALES']
             + df['T_FLAG'] * SOLO_FLT_DISCOUNT_PER_TFLAG * df['PRICE']
         )
         return np.maximum(
             multiplier * base_price,
-            df['PRICE_OTA'] - df['PRICE'] * SOLO_FLT_DISCOUNT_PER_TFLAG
+            df['PRICE_OTA']
         )
 
-    def _price_tflag_negative(self, df):
-        """T_FLAG < 0（销售偏慢）的定价公式。
+    def _price_tflag_positive_plfest_negative(self, df):
+        """T_FLAG>=0 & BKD_PLF_EST <0.90 ：销售速度快，但进度不理想
 
-        定价 = clamp(
-            min(max(min(BKD_PLF_EST, 1), 0.9), 1) * (1 + T_FLAG × 0.1) × 成交价,
-            lower = OTA价格 - 全票价 × 0.1,
-            upper = OTA价格
-        )a
+        定价= min (成交价, OTA价格)
         """
-        multiplier = np.minimum(
-            np.maximum(np.minimum(df['BKD_PLF_EST'], 1),
-                       SOLO_FLT_PRICE_MULTIPLIER_MIN),
-            1
-        )
-        price = (
-            multiplier
-            * (1 + df['T_FLAG'] * SOLO_FLT_DISCOUNT_PER_TFLAG)
-            * df['PJPJ_SALES']
+        return np.minimum(df['PJPJ_SALES'], df['PRICE_OTA'])
+
+    def _price_tflag_negative_plfest_positive(self, df):
+        """T_FLAG<0 & BKD_PLF_EST >=0.90：销售速度慢，但进度理想
+
+        定价= max (成交价, OTA价格)
+        """
+        return np.maximum(df['PJPJ_SALES'], df['PRICE_OTA'])
+
+    def _price_tflag_negative_plfest_negative(self, df):
+        """T_FLAG<0 & BKD_PLF_EST <0.90：销售速度和进度都不理想
+
+        定价 = clamp(max(BKD_PLF_EST/0.9, 0.9) * (成交价 + T_FLAG × 0.1 × 全票价), lower = OTA价格 - 全票价 × 0.1, upper = OTA价格)
+        """
+        multiplier = np.maximum(df['BKD_PLF_EST']/0.9, 0.9)
+        base_price = (
+            df['PJPJ_SALES']
+            + df['T_FLAG'] * SOLO_FLT_DISCOUNT_PER_TFLAG * df['PRICE']
         )
         return np.maximum(
-            np.minimum(price, df['PRICE_OTA']),
+            np.minimum(multiplier * base_price, df['PRICE_OTA']),
             df['PRICE_OTA'] - df['PRICE'] * SOLO_FLT_DISCOUNT_PER_TFLAG
         )
-
     # ----------------------------------------------------------
     # 结果输出
     # ----------------------------------------------------------

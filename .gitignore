@@ -1,0 +1,23 @@
+# Python 编译缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE 配置
+.idea/
+
+# Claude Code 本地会话记录
+
+# 运行日志
+logs/
+*.log
+
+# PyInstaller 打包产物
+dist/
+build/
+
+# 数据库账户密码
+*.ini
+
+# 个人文件
+*.png
